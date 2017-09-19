@@ -11,6 +11,11 @@ public class User {
     public User() {
     }
 
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
     public User(long ID, String username, String password, int reputation, long characterID, boolean ready) {
         this.ID = ID;
         this.username = username;
@@ -66,5 +71,17 @@ public class User {
 
     public void setReady(boolean ready) {
         this.ready = ready;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "ID=" + ID +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", reputation=" + reputation +
+                ", characterID=" + characterID +
+                ", ready=" + ready +
+                '}';
     }
 }

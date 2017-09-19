@@ -14,10 +14,10 @@ public class DataSource {
     private final Connection connection;
 
     public DataSource() {
-        this.connection = getConnection();
+        this.connection = createConnection();
     }
 
-    private static Connection getConnection() {
+    private static Connection createConnection() {
         try {
             DriverManager.registerDriver((Driver) Class.forName("com.mysql.jdbc.Driver").newInstance());
 
@@ -48,6 +48,10 @@ public class DataSource {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public Connection getConnection() {
+        return connection;
     }
 
     private static String getPassword() throws IOException {

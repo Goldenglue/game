@@ -21,7 +21,7 @@ public class UserDao {
     }
 
     public int add(User user) throws SQLException {
-        return executor.execPreparedQuery("insert into users(user_name, password) values(?,?)", user.getUsername(), user.getPassword());
+        return executor.execPreparedQuery("insert into users(username, password) values(?,?)", user.getUsername(), user.getPassword());
     }
 
     public User getByUsername(String username) {

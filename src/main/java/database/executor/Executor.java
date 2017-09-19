@@ -9,9 +9,6 @@ public class Executor {
         this.connection = connection;
     }
 
-    public Executor() {
-    }
-
     public int execUpdate(String update) throws SQLException {
         Statement stmt = connection.createStatement();
         return stmt.executeUpdate(update);

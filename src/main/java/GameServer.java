@@ -10,8 +10,11 @@ import servlets.LoginServlet;
 public class GameServer {
     public static void main(String[] args) throws Exception {
         UserService userService = new UserService();
+        userService.addNewUser("raz", "dva");
 
-        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+        System.out.println(userService.getByUsername("raz"));
+
+        /*ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.addServlet(new ServletHolder(new LoginServlet(userService)), "/");
 
         ResourceHandler resource_handler = new ResourceHandler();
@@ -24,6 +27,6 @@ public class GameServer {
         server.setHandler(handlers);
 
         server.start();
-        server.join();
+        server.join();*/
     }
 }
