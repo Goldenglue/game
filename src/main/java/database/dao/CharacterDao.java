@@ -13,7 +13,7 @@ public class CharacterDao {
     }
 
     public long getCharacterID(Long userID) throws SQLException {
-        return executor.execQuery("select id from characters where ownerID = ", result -> {
+        return executor.execPreparedQuery("select id from characters where ownerID = ?", result -> {
             result.next();
             return result.getLong(1);
         });

@@ -3,10 +3,13 @@ package database.executor;
 import java.sql.*;
 
 public class Executor {
-    private final Connection connection;
+    private Connection connection;
 
     public Executor(Connection connection) {
         this.connection = connection;
+    }
+
+    public Executor() {
     }
 
     public int execUpdate(String update) throws SQLException {
@@ -29,6 +32,21 @@ public class Executor {
             PreparedStatement ps = connection.prepareStatement(query);
             for (int i = 0; i < arguments.length; i++) {
                 ps.setString(i + 1, arguments[i]);
+            }
+            rowsUpdated = ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return rowsUpdated;
+    }
+
+    public int execPreparedQuery(String query, Integer... arguments) {
+        int rowsUpdated = 0;
+
+        try {
+            PreparedStatement ps = connection.prepareStatement(query);
+            for (int i = 0; i < arguments.length; i++) {
+                ps.setInt(i + 1, arguments[i]);
             }
             rowsUpdated = ps.executeUpdate();
         } catch (SQLException e) {

@@ -21,6 +21,21 @@ public class UserDao {
     }
 
     public int add(User user) throws SQLException {
-         return executor.execPreparedQuery("insert into users(user_name, password) values(?,?)",user.getUsername(), user.getPassword());
+        return executor.execPreparedQuery("insert into users(user_name, password) values(?,?)", user.getUsername(), user.getPassword());
+    }
+
+    public User getByUsername(String username) {
+        return executor.execPreparedQuery("select * from users where username = ?", result -> {
+            result.next();
+
+            User user = new User();
+            user.setID(result.getLong("id"));
+            user.setUsername(result.getString("username"));
+            user.setPassword(result.getString("password"));
+            user.setReputation(result.getInt("reputation"));
+            user.setCharacterID(result.getLong("character_id"));
+
+            return user;
+        }, username);
     }
 }
