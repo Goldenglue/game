@@ -1,70 +1,70 @@
 package database.pojos;
 
 public class Character {
-    private long ID;
-    private short maxHealth;
-    private short maxDamage;
-    private short currentHealth;
-    private short currentDamage;
-    private long ownerID;
+    private int id;
+    private int maxHealth;
+    private int maxDamage;
+    private int currentHealth;
+    private int currentDamage;
+    private int ownerId;
 
     public Character() {
     }
 
-    public Character(long ID, short maxHealth, short maxDamage, short currentHealth, short currentDamage, long ownerID) {
-        this.ID = ID;
+    public Character(int id, short maxHealth, short maxDamage, short currentHealth, short currentDamage, int ownerId) {
+        this.id = id;
         this.maxHealth = maxHealth;
         this.maxDamage = maxDamage;
         this.currentHealth = currentHealth;
         this.currentDamage = currentDamage;
-        this.ownerID = ownerID;
+        this.ownerId = ownerId;
     }
 
-    public long getID() {
-        return ID;
+    public int getId() {
+        return id;
     }
 
-    public void setID(long ID) {
-        this.ID = ID;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public short getMaxHealth() {
+    public int getMaxHealth() {
         return maxHealth;
     }
 
-    public void setMaxHealth(short maxHealth) {
+    public void setMaxHealth(int maxHealth) {
         this.maxHealth = maxHealth;
     }
 
-    public short getMaxDamage() {
+    public int getMaxDamage() {
         return maxDamage;
     }
 
-    public void setMaxDamage(short maxDamage) {
+    public void setMaxDamage(int maxDamage) {
         this.maxDamage = maxDamage;
     }
 
-    public short getCurrentHealth() {
+    public int getCurrentHealth() {
         return currentHealth;
     }
 
-    public void setCurrentHealth(short currentHealth) {
+    public void setCurrentHealth(int currentHealth) {
         this.currentHealth = currentHealth;
     }
 
-    public short getCurrentDamage() {
+    public int getCurrentDamage() {
         return currentDamage;
     }
 
-    public void setCurrentDamage(short currentDamage) {
+    public void setCurrentDamage(int currentDamage) {
         this.currentDamage = currentDamage;
     }
 
-    public long getOwnerID() {
-        return ownerID;
+    public int getOwnerId() {
+        return ownerId;
     }
 
-    public void setOwnerID(long ownerID) {
-        this.ownerID = ownerID;
+    public void setOwnerId(int ownerId) {
+        this.ownerId = ownerId;
     }
 }

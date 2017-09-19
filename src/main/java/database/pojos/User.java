@@ -1,11 +1,11 @@
 package database.pojos;
 
 public class User {
-    private long ID;
+    private int id;
     private String username;
     private String password;
     private int reputation;
-    private long characterID;
+    private int characterId;
     private boolean ready;
 
     public User() {
@@ -14,23 +14,24 @@ public class User {
     public User(String username, String password) {
         this.username = username;
         this.password = password;
+        this.reputation = 0;
     }
 
-    public User(long ID, String username, String password, int reputation, long characterID, boolean ready) {
-        this.ID = ID;
+    public User(int id, String username, String password, int reputation, int characterId, boolean ready) {
+        this.id = id;
         this.username = username;
         this.password = password;
         this.reputation = reputation;
-        this.characterID = characterID;
+        this.characterId = characterId;
         this.ready = ready;
     }
 
-    public long getID() {
-        return ID;
+    public int getId() {
+        return id;
     }
 
-    public void setID(long ID) {
-        this.ID = ID;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getUsername() {
@@ -49,12 +50,12 @@ public class User {
         this.password = password;
     }
 
-    public long getCharacterID() {
-        return characterID;
+    public int getCharacterId() {
+        return characterId;
     }
 
-    public void setCharacterID(long characterID) {
-        this.characterID = characterID;
+    public void setCharacterId(int characterId) {
+        this.characterId = characterId;
     }
 
     public int getReputation() {
@@ -76,11 +77,11 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "ID=" + ID +
+                "id=" + id +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", reputation=" + reputation +
-                ", characterID=" + characterID +
+                ", characterId=" + characterId +
                 ", ready=" + ready +
                 '}';
     }

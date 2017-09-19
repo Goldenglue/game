@@ -21,7 +21,7 @@ public class UserDao {
     }
 
     public int add(User user) throws SQLException {
-        return executor.execPreparedQuery("insert into users(username, password) values(?,?)", user.getUsername(), user.getPassword());
+        return executor.execInsertStatement("insert into users(username, password) values(?,?)", user.getUsername(), user.getPassword());
     }
 
     public User getByUsername(String username) {
@@ -29,11 +29,11 @@ public class UserDao {
             result.next();
 
             User user = new User();
-            user.setID(result.getLong("id"));
+            user.setId(result.getInt("id"));
             user.setUsername(result.getString("username"));
             user.setPassword(result.getString("password"));
             user.setReputation(result.getInt("reputation"));
-            user.setCharacterID(result.getLong("character_id"));
+            user.setCharacterId(result.getInt("character_id"));
 
             return user;
         }, username);

@@ -7,9 +7,9 @@ import java.sql.SQLException;
 
 public class UserService implements Service {
 
-    public void addNewUser(String username, String password) throws SQLException {
+    public int addNewUser(User user) throws SQLException {
         UserDao dao = new UserDao(source.getConnection());
-        dao.add(new User(username, password));
+        return dao.add(user);
     }
 
     public User getByUsername(String username) {

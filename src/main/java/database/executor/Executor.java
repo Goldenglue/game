@@ -14,42 +14,29 @@ public class Executor {
         return stmt.executeUpdate(update);
     }
 
+    public int execInsertStatement(String query, String... arguments) throws SQLException{
+        int key = 0;
+        try {
+            PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            for (int i = 0; i < arguments.length; i++) {
+                ps.setString(i + 1, arguments[i]);
+            }
+            ps.executeUpdate();
+            ResultSet generatedKeys = ps.getGeneratedKeys();
+            generatedKeys.next();
+            key = generatedKeys.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return key;
+    }
+
     public <T> T execQuery(String query, ResultHandler<T> handler) throws SQLException {
         Statement stmt = connection.createStatement();
         stmt.execute(query);
         ResultSet result = stmt.getResultSet();
 
         return handler.handle(result);
-    }
-
-    public int execPreparedQuery(String query, String... arguments) {
-        int rowsUpdated = 0;
-
-        try {
-            PreparedStatement ps = connection.prepareStatement(query);
-            for (int i = 0; i < arguments.length; i++) {
-                ps.setString(i + 1, arguments[i]);
-            }
-            rowsUpdated = ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return rowsUpdated;
-    }
-
-    public int execPreparedQuery(String query, Integer... arguments) {
-        int rowsUpdated = 0;
-
-        try {
-            PreparedStatement ps = connection.prepareStatement(query);
-            for (int i = 0; i < arguments.length; i++) {
-                ps.setInt(i + 1, arguments[i]);
-            }
-            rowsUpdated = ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return rowsUpdated;
     }
 
     public <T> T execPreparedQuery(String query, ResultHandler<T> handler, String... arguments) {

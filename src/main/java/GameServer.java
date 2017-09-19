@@ -1,18 +1,15 @@
+import database.pojos.User;
 import database.services.UserService;
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.HandlerList;
-import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
-import servlets.LoginServlet;
 
 public class GameServer {
     public static void main(String[] args) throws Exception {
         UserService userService = new UserService();
-        userService.addNewUser("raz", "dva");
+        User user = new User("Ivan","kekkok");
+        int id = userService.addNewUser(user);
+        user.setId(id);
+        user.setCharacterId(id);
 
-        System.out.println(userService.getByUsername("raz"));
+        System.out.println(userService.getByUsername("Ivan"));
 
         /*ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.addServlet(new ServletHolder(new LoginServlet(userService)), "/");
