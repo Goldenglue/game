@@ -6,16 +6,18 @@ public class User {
     private String password;
     private int reputation;
     private long characterID;
+    private boolean ready;
 
     public User() {
     }
 
-    public User(long ID, String username, String password, int reputation, long characterID) {
+    public User(long ID, String username, String password, int reputation, long characterID, boolean ready) {
         this.ID = ID;
         this.username = username;
         this.password = password;
         this.reputation = reputation;
         this.characterID = characterID;
+        this.ready = ready;
     }
 
     public long getID() {
@@ -56,5 +58,13 @@ public class User {
 
     public void setReputation(int reputation) {
         this.reputation = reputation;
+    }
+
+    public boolean isReady() {
+        return ready;
+    }
+
+    public void setReady(boolean ready) {
+        this.ready = ready;
     }
 }

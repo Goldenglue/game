@@ -5,10 +5,10 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class DatabaseService {
+public class DataSource {
     private final Connection connection;
 
-    public DatabaseService() {
+    public DataSource() {
         this.connection = getConnection();
     }
 
