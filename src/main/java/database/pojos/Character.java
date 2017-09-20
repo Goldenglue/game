@@ -11,12 +11,16 @@ public class Character {
     public Character() {
     }
 
-    public Character(int id, short maxHealth, short maxDamage, short currentHealth, short currentDamage, int ownerId) {
+    public Character(int ownerId) {
+        this.ownerId = ownerId;
+    }
+
+    public Character(int id, int maxHealth, int maxDamage, int ownerId) {
         this.id = id;
         this.maxHealth = maxHealth;
         this.maxDamage = maxDamage;
-        this.currentHealth = currentHealth;
-        this.currentDamage = currentDamage;
+        this.currentHealth = maxHealth;
+        this.currentDamage = maxDamage;
         this.ownerId = ownerId;
     }
 

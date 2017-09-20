@@ -21,11 +21,6 @@ public class DataSource {
         try {
             DriverManager.registerDriver((Driver) Class.forName("com.mysql.jdbc.Driver").newInstance());
 
-            /*MysqlDataSource dataSource = new MysqlDataSource();
-            dataSource.setDatabaseName("game");
-            dataSource.setUser("root");
-            dataSource.setPassword("u6t9eR67");*/
-
             StringBuilder url = null;
             try {
                 url = new StringBuilder()
@@ -39,8 +34,6 @@ public class DataSource {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            System.out.println("URL: " + url + "\n");
 
             assert url != null;
             return DriverManager.getConnection(url.toString());

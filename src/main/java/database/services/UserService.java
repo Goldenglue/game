@@ -15,6 +15,6 @@ public class UserService implements Service {
 
     public User getByUsername(String username) {
         UserDao dao = new UserDao(source.getConnection());
-        return dao.getByUsername(username);
+        return dao.get(username);
     }
 }

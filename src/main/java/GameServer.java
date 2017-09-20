@@ -1,29 +1,38 @@
-import database.pojos.User;
+import database.services.CharactersService;
 import database.services.UserService;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.DefaultHandler;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+import servlets.DuelServlet;
+import servlets.LoginServlet;
+import servlets.MainMenuServlet;
 
 public class GameServer {
     public static void main(String[] args) throws Exception {
         UserService userService = new UserService();
-        User user = new User("Ivan","kekkok");
-        int id = userService.addNewUser(user);
-        user.setId(id);
-        user.setCharacterId(id);
+        CharactersService charactersService = new CharactersService();
 
-        System.out.println(userService.getByUsername("Ivan"));
 
-        /*ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        context.addServlet(new ServletHolder(new LoginServlet(userService)), "/");
+        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+        context.addServlet(new ServletHolder(new LoginServlet(userService, charactersService)), "/login");
+        context.addServlet(new ServletHolder(new MainMenuServlet(userService)), "/main");
+        context.addServlet(new ServletHolder(new DuelServlet()), "/main/duel");
 
-        ResourceHandler resource_handler = new ResourceHandler();
-        resource_handler.setResourceBase("resources");
+        ResourceHandler resourceHandler = new ResourceHandler();
+        resourceHandler.setResourceBase("src/main/resources");
+        resourceHandler.setDirectoriesListed(true);
 
         HandlerList handlers = new HandlerList();
-        handlers.setHandlers(new Handler[]{resource_handler, context});
+        handlers.setHandlers(new Handler[]{resourceHandler, context});
 
         Server server = new Server(8080);
         server.setHandler(handlers);
 
         server.start();
-        server.join();*/
+        server.join();
     }
 }

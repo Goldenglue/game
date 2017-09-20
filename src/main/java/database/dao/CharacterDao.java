@@ -2,6 +2,7 @@ package database.dao;
 
 import database.executor.Executor;
 import database.pojos.Character;
+import database.pojos.CharacterBuilder;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -13,7 +14,20 @@ public class CharacterDao {
         this.executor = new Executor(connection);
     }
 
-    public int add(Character character) throws SQLException{
-        return executor.execInsertStatement("insert into characters(owner_id) values(?)");
+    public int add(Character character) throws SQLException {
+        return executor.execInsertStatement("insert into characters(owner_id) values(" + character.getOwnerId() + ")");
+    }
+
+    public Character get(int ownerId) throws SQLException {
+        return executor.execQuery("select * from characters where owner_id = '" + ownerId + "'", result -> {
+            if (result.next()) {
+                return new CharacterBuilder()
+                        .setId(result.getInt("id"))
+                        .setMaxHealth(result.getInt("max_health"))
+                        .setMaxDamage(result.getInt("max_damage"))
+                        .setOwnerId(result.getInt("owner_id")).createCharacter();
+            }
+            return null;
+        });
     }
 }

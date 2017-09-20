@@ -11,7 +11,7 @@ import java.io.Writer;
 import java.util.Map;
 
 public class PageGenerator {
-    private static final String HTML_DIR = "resources";
+    private static final String HTML_DIR = "templates";
 
     private static PageGenerator pageGenerator;
     private final Configuration cfg;
@@ -25,7 +25,7 @@ public class PageGenerator {
     public String getPage(String filename, Map<String, Object> data) {
         Writer stream = new StringWriter();
         try {
-            Template template = cfg.getTemplate(HTML_DIR + File.separator + filename);
+            Template template = cfg.getTemplate(HTML_DIR + "/" + filename);
             template.process(data, stream);
         } catch (IOException | TemplateException e) {
             e.printStackTrace();
@@ -35,5 +35,10 @@ public class PageGenerator {
 
     private PageGenerator() {
         cfg = new Configuration(Configuration.VERSION_2_3_26);
+        try {
+            cfg.setDirectoryForTemplateLoading(new File("E:\\Users\\IvanOP\\IdeaProjects\\game\\src\\main\\resources"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

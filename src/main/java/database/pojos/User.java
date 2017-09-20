@@ -5,7 +5,6 @@ public class User {
     private String username;
     private String password;
     private int reputation;
-    private int characterId;
     private boolean ready;
 
     public User() {
@@ -17,12 +16,11 @@ public class User {
         this.reputation = 0;
     }
 
-    public User(int id, String username, String password, int reputation, int characterId, boolean ready) {
+    public User(int id, String username, String password, int reputation, boolean ready) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.reputation = reputation;
-        this.characterId = characterId;
         this.ready = ready;
     }
 
@@ -50,14 +48,6 @@ public class User {
         this.password = password;
     }
 
-    public int getCharacterId() {
-        return characterId;
-    }
-
-    public void setCharacterId(int characterId) {
-        this.characterId = characterId;
-    }
-
     public int getReputation() {
         return reputation;
     }
@@ -81,7 +71,6 @@ public class User {
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", reputation=" + reputation +
-                ", characterId=" + characterId +
                 ", ready=" + ready +
                 '}';
     }

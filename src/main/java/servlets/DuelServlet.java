@@ -1,24 +1,23 @@
 package servlets;
 
-import database.pojos.Duel;
+import templater.PageGenerator;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
+import java.util.HashMap;
 
-public class DuelServlet extends HttpServlet{
-    private final List<Duel> ongoingDuels;
-
-    public DuelServlet(List<Duel> ongoingDuels) {
-        this.ongoingDuels = ongoingDuels;
-    }
+public class DuelServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doGet(req, resp);
+        System.out.println("Get in duel servlet");
+
+        resp.setContentType("text/html;charset=utf-8");
+        resp.getWriter().println(PageGenerator.instance().getPage("duel.html", new HashMap<>()));
+        resp.setStatus(HttpServletResponse.SC_OK);
     }
 
     @Override

@@ -24,17 +24,16 @@ public class UserDao {
         return executor.execInsertStatement("insert into users(username, password) values(?,?)", user.getUsername(), user.getPassword());
     }
 
-    public User getByUsername(String username) {
+    public User get(String username) {
         return executor.execPreparedQuery("select * from users where username = ?", result -> {
-            result.next();
-
-            User user = new User();
-            user.setId(result.getInt("id"));
-            user.setUsername(result.getString("username"));
-            user.setPassword(result.getString("password"));
-            user.setReputation(result.getInt("reputation"));
-            user.setCharacterId(result.getInt("character_id"));
-
+            User user = null;
+            if (result.next()) {
+                user = new User();
+                user.setId(result.getInt("id"));
+                user.setUsername(result.getString("username"));
+                user.setPassword(result.getString("password"));
+                user.setReputation(result.getInt("reputation"));
+            }
             return user;
         }, username);
     }
