@@ -1,8 +1,8 @@
 import database.services.CharactersService;
+import database.services.SessionsService;
 import database.services.UserService;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -15,11 +15,12 @@ public class GameServer {
     public static void main(String[] args) throws Exception {
         UserService userService = new UserService();
         CharactersService charactersService = new CharactersService();
+        SessionsService sessionsService = new SessionsService();
 
 
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        context.addServlet(new ServletHolder(new LoginServlet(userService, charactersService)), "/login");
-        context.addServlet(new ServletHolder(new MainMenuServlet(userService)), "/main");
+        context.addServlet(new ServletHolder(new LoginServlet(userService, charactersService, sessionsService)), "/login");
+        context.addServlet(new ServletHolder(new MainMenuServlet(sessionsService)), "/main");
         context.addServlet(new ServletHolder(new DuelServlet()), "/main/duel");
 
         ResourceHandler resourceHandler = new ResourceHandler();
@@ -35,4 +36,5 @@ public class GameServer {
         server.start();
         server.join();
     }
+
 }

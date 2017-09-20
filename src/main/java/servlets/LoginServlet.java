@@ -2,6 +2,7 @@ package servlets;
 
 import database.pojos.User;
 import database.services.CharactersService;
+import database.services.SessionsService;
 import database.services.UserService;
 import templater.PageGenerator;
 
@@ -17,10 +18,12 @@ import java.util.Map;
 public class LoginServlet extends HttpServlet {
     private final UserService userService;
     private final CharactersService charactersService;
+    private final SessionsService sessionsService;
 
-    public LoginServlet(UserService userService, CharactersService charactersService) {
+    public LoginServlet(UserService userService, CharactersService charactersService, SessionsService sessionsService) {
         this.userService = userService;
         this.charactersService = charactersService;
+        this.sessionsService = sessionsService;
     }
 
     @Override
@@ -31,45 +34,74 @@ public class LoginServlet extends HttpServlet {
         pageVariables.put("message", "");
 
         resp.setContentType("text/html;charset=utf-8");
-        resp.getWriter().println(PageGenerator.instance().getPage("index.html", pageVariables));
         resp.setStatus(HttpServletResponse.SC_OK);
+
+        try {
+            if (!sessionsService.isLoggedIn(req.getSession().getId())) {
+                resp.getWriter().println(PageGenerator.instance().getPage("index.html", pageVariables));
+            } else {
+                resp.sendRedirect("/main");
+                resp.getWriter().println(PageGenerator.instance().getPage("main.html", pageVariables));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         System.out.println("post request");
+
         String username = req.getParameter("username");
         String password = req.getParameter("password");
 
         Map<String, Object> pageVariables = new HashMap<>();
         pageVariables.put("message", "");
 
+        resp.setContentType("text/html;charset=utf-8");
+
         User user = userService.getByUsername(username);
         if (user == null && !password.equals("")) {
-            System.out.println("Creating new user!");
+
             try {
                 user = new User(username, password);
                 user.setId(userService.addNewUser(username, password));
+
                 charactersService.addNewCharacter(user);
+                sessionsService.add(req.getSession().getId(), user.getId());
+
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+
             resp.setContentType("text/html;charset=utf-8");
+            resp.sendRedirect("/main");
             resp.getWriter().println(PageGenerator.instance().getPage("main.html", pageVariables));
             resp.setStatus(HttpServletResponse.SC_OK);
+
             return;
         }
 
         if (user != null && user.getPassword().equals(password)) {
-            System.out.println("User " + user + " + already exists!");
+
+            try {
+                sessionsService.add(req.getSession().getId(), user.getId());
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
             resp.setContentType("text/html;charset=utf-8");
+            resp.sendRedirect("/main");
             resp.getWriter().println(PageGenerator.instance().getPage("main.html", pageVariables));
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
         } else {
 
             pageVariables.put("message", "Wrong password");
-            resp.setContentType("text/html;charset=utf-8");
+
             resp.getWriter().println(PageGenerator.instance().getPage("index.html", pageVariables));
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }

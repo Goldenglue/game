@@ -23,8 +23,9 @@ public class Executor {
             }
             ps.executeUpdate();
             ResultSet generatedKeys = ps.getGeneratedKeys();
-            generatedKeys.next();
-            key = generatedKeys.getInt(1);
+            if (generatedKeys.next()) {
+                key = generatedKeys.getInt(1);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
