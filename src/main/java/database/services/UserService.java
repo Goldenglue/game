@@ -13,7 +13,7 @@ public class UserService implements Service {
         return dao.add(user);
     }
 
-    public User getByUsername(String username) {
+    public User getByUsername(String username) throws SQLException {
         UserDao dao = new UserDao(source.getConnection());
         return dao.get(username);
     }

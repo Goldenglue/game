@@ -14,14 +14,36 @@ public class SessionDao {
     }
 
     public void add(String sessionId, int userId) throws SQLException {
-        executor.execInsertStatement("insert into current_sessions(session_id, user_id) values(?, " + userId + ")", sessionId);
+        executor.execPreparedUpdate("insert into current_sessions(session_id, user_id) values(?,?)",
+                ps -> {
+                    try {
+                        ps.setString(1, sessionId);
+                        ps.setInt(2, userId);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 
     public boolean isLoggedIn(String sessionId) throws SQLException {
-        return executor.execPreparedQuery("select user_id from current_sessions where session_id = ?", ResultSet::next, sessionId);
+        return executor.execPreparedQuery("select user_id from current_sessions where session_id = ?", ResultSet::next,
+                ps -> {
+                    try {
+                        ps.setString(1, sessionId);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 
     public void remove(String sessionId) throws SQLException {
-        executor.execUpdate("delete from current_sessions where session_id = '" + sessionId + "'");
+        executor.execPreparedUpdate("delete from current_sessions where session_id = ?",
+                ps -> {
+                    try {
+                        ps.setString(1, sessionId);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 }

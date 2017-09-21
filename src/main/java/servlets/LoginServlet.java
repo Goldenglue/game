@@ -63,7 +63,12 @@ public class LoginServlet extends HttpServlet {
 
         resp.setContentType("text/html;charset=utf-8");
 
-        User user = userService.getByUsername(username);
+        User user = null;
+        try {
+            user = userService.getByUsername(username);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         if (user == null && !password.equals("")) {
 
             try {

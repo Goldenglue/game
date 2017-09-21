@@ -14,27 +14,50 @@ public class UserDao {
     }
 
     public long getUserID(String username) throws SQLException {
-        return executor.execPreparedQuery("select id from users where username = ?", result -> {
-            result.next();
-            return result.getLong(1);
-        }, username);
+        return executor.execPreparedQuery("select id from users where username = ?",
+                result -> {
+                    result.next();
+                    return result.getLong(1);
+                },
+                ps -> {
+                    try {
+                        ps.setString(1, username);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 
     public int add(User user) throws SQLException {
-        return executor.execInsertStatement("insert into users(username, password) values(?,?)", user.getUsername(), user.getPassword());
+        return executor.execPreparedUpdate("insert into users(username, password) values(?,?)",
+                ps -> {
+                    try {
+                        ps.setString(1, user.getUsername());
+                        ps.setString(2, user.getPassword());
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 
-    public User get(String username) {
+    public User get(String username) throws SQLException{
         return executor.execPreparedQuery("select * from users where username = ?", result -> {
-            User user = null;
             if (result.next()) {
-                user = new User();
+                User user = new User();
                 user.setId(result.getInt("id"));
                 user.setUsername(result.getString("username"));
                 user.setPassword(result.getString("password"));
                 user.setReputation(result.getInt("reputation"));
+                return user;
+            } else {
+                return null;
             }
-            return user;
-        }, username);
+        }, ps -> {
+            try {
+                ps.setString(1, username);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
     }
 }

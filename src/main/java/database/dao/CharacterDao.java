@@ -15,7 +15,14 @@ public class CharacterDao {
     }
 
     public int add(Character character) throws SQLException {
-        return executor.execInsertStatement("insert into characters(owner_id) values(" + character.getOwnerId() + ")");
+        return executor.execPreparedUpdate("insert into characters(owner_id) values(?)",
+                ps -> {
+                    try {
+                        ps.setInt(1, character.getOwnerId());
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 
     public Character get(int ownerId) throws SQLException {

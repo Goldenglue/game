@@ -1,6 +1,7 @@
 package database.executor;
 
 import java.sql.*;
+import java.util.function.Consumer;
 
 public class Executor {
     private Connection connection;
@@ -9,45 +10,36 @@ public class Executor {
         this.connection = connection;
     }
 
-    public int execUpdate(String update) throws SQLException {
-        Statement stmt = connection.createStatement();
-        return stmt.executeUpdate(update);
+    public <T> T execQuery(String query, ResultHandler<T> handler) throws SQLException {
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute(query);
+            try (ResultSet result = stmt.getResultSet()) {
+                return handler.handle(result);
+            }
+        }
     }
 
-    public int execInsertStatement(String query, String... arguments) throws SQLException{
+    public int execPreparedUpdate(String query, Consumer<PreparedStatement> consumer) {
         int key = 0;
-        try {
-            PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            for (int i = 0; i < arguments.length; i++) {
-                ps.setString(i + 1, arguments[i]);
-            }
+        try (PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            consumer.accept(ps);
             ps.executeUpdate();
-            ResultSet generatedKeys = ps.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                key = generatedKeys.getInt(1);
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                key = generatedKeys.next() ? generatedKeys.getInt(1) : 0;
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return key;
     }
 
-    public <T> T execQuery(String query, ResultHandler<T> handler) throws SQLException {
-        Statement stmt = connection.createStatement();
-        stmt.execute(query);
-        ResultSet result = stmt.getResultSet();
-
-        return handler.handle(result);
-    }
-
-    public <T> T execPreparedQuery(String query, ResultHandler<T> handler, String... arguments) {
-        try {
-            PreparedStatement ps = connection.prepareStatement(query);
-            for (int i = 0; i < arguments.length; i++) {
-                ps.setString(i + 1, arguments[i]);
+    public <T> T execPreparedQuery(String query, ResultHandler<T> handler, Consumer<PreparedStatement> consumer) {
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            consumer.accept(ps);
+            try (ResultSet result = ps.executeQuery()) {
+                return handler.handle(result);
             }
-            ResultSet result = ps.executeQuery();
-            return handler.handle(result);
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
