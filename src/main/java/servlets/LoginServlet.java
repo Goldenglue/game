@@ -28,7 +28,7 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("get request ");
+        System.out.println("get in login servlet");
 
         Map<String, Object> pageVariables = new HashMap<>();
         pageVariables.put("message", "");
@@ -53,7 +53,7 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("post request");
+        System.out.println("post in login servlet");
 
         String username = req.getParameter("username");
         String password = req.getParameter("password");

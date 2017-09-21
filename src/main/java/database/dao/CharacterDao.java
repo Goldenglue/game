@@ -26,15 +26,23 @@ public class CharacterDao {
     }
 
     public Character get(int ownerId) throws SQLException {
-        return executor.execQuery("select * from characters where owner_id = '" + ownerId + "'", result -> {
-            if (result.next()) {
-                return new CharacterBuilder()
-                        .setId(result.getInt("id"))
-                        .setMaxHealth(result.getInt("max_health"))
-                        .setMaxDamage(result.getInt("max_damage"))
-                        .setOwnerId(result.getInt("owner_id")).createCharacter();
-            }
-            return null;
-        });
+        return executor.execPreparedQuery("select * from characters where owner_id = ?",
+                result -> {
+                    if (result.next()) {
+                        return new CharacterBuilder()
+                                .setId(result.getInt("id"))
+                                .setMaxHealth(result.getInt("max_health"))
+                                .setMaxDamage(result.getInt("max_damage"))
+                                .setOwnerId(result.getInt("owner_id")).createCharacter();
+                    }
+                    return null;
+                },
+                ps -> {
+                    try {
+                        ps.setInt(1, ownerId);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 }

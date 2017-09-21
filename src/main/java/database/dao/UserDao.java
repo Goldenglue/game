@@ -40,24 +40,25 @@ public class UserDao {
                 });
     }
 
-    public User get(String username) throws SQLException{
-        return executor.execPreparedQuery("select * from users where username = ?", result -> {
-            if (result.next()) {
-                User user = new User();
-                user.setId(result.getInt("id"));
-                user.setUsername(result.getString("username"));
-                user.setPassword(result.getString("password"));
-                user.setReputation(result.getInt("reputation"));
-                return user;
-            } else {
-                return null;
-            }
-        }, ps -> {
-            try {
-                ps.setString(1, username);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
+    public User get(String username) throws SQLException {
+        return executor.execPreparedQuery("select * from users where username = ?",
+                result -> {
+                    if (result.next()) {
+                        User user = new User();
+                        user.setId(result.getInt("id"));
+                        user.setUsername(result.getString("username"));
+                        user.setPassword(result.getString("password"));
+                        user.setReputation(result.getInt("reputation"));
+                        return user;
+                    }
+                    return null;
+                },
+                ps -> {
+                    try {
+                        ps.setString(1, username);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 }
