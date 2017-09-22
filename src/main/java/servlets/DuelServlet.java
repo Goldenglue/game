@@ -20,7 +20,7 @@ public class DuelServlet extends HttpServlet {
 
         resp.setContentType("text/html;charset=utf-8");
         resp.setStatus(HttpServletResponse.SC_OK);
-        resp.getWriter().println(PageGenerator.instance().getPage("duel.html", new HashMap<>()));
+        resp.getWriter().println(PageGenerator.instance().getPage("duel.html"));
     }
 
     @Override
