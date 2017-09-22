@@ -1,8 +1,7 @@
-package servlets;
+package templater;
 
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import templater.PageGenerator;
 
 import java.io.IOException;
 import java.io.Writer;

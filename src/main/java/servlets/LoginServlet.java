@@ -4,6 +4,10 @@ import database.pojos.User;
 import database.services.CharactersService;
 import database.services.SessionsService;
 import database.services.UserService;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import templater.PageGenHelper;
+import templater.PageGenerator;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -40,18 +44,9 @@ public class LoginServlet extends HttpServlet {
         resp.setContentType("text/html;charset=utf-8");
         resp.setStatus(HttpServletResponse.SC_OK);
 
-        try {
-            if (!sessionsService.isLoggedIn(req.getSession().getId())) {
-                Writer stream = new StringWriter();
-                PageGenHelper.getPage("index.html", stream, pageVariables, pageGenStart, 1, 1);
-                resp.getWriter().println(stream.toString());
-            } else {
-                resp.sendRedirect("/main");
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        Writer stream = new StringWriter();
+        PageGenHelper.getPage("index.html", stream, pageVariables, pageGenStart, 0, 0);
+        resp.getWriter().println(stream.toString());
 
 
     }
@@ -92,7 +87,7 @@ public class LoginServlet extends HttpServlet {
                 dbCallsTime = dbCallsTime.plus(Duration.between(charAddStart, Instant.now()));
 
                 Instant sessionAddStart = Instant.now();
-                sessionsService.add(req.getSession().getId(), user.getId());
+                sessionsService.add(req.getSession(true).getId(), user.getId());
                 dbCallsTime = dbCallsTime.plus(Duration.between(sessionAddStart, Instant.now()));
             } catch (SQLException e) {
                 e.printStackTrace();
