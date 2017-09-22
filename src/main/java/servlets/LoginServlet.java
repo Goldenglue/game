@@ -38,6 +38,10 @@ public class LoginServlet extends HttpServlet {
         Instant pageGenStart = Instant.now();
         System.out.println("get in login servlet");
 
+        String time = req.getParameter("time");
+        String db = req.getParameter("db");
+        String dbTime = req.getParameter("dbTime");
+
         Map<String, Object> pageVariables = new HashMap<>();
         pageVariables.put("message", "");
 
@@ -45,7 +49,11 @@ public class LoginServlet extends HttpServlet {
         resp.setStatus(HttpServletResponse.SC_OK);
 
         Writer stream = new StringWriter();
-        PageGenHelper.getPage("index.html", stream, pageVariables, pageGenStart, 0, 0);
+        if (time != null && db != null && dbTime != null) {
+            PageGenHelper.getPage("index.html", stream, pageVariables, pageGenStart.minusMillis(Long.parseLong(time)), Integer.parseInt(db), Long.parseLong(dbTime));
+        } else {
+            PageGenHelper.getPage("index.html", stream, pageVariables, pageGenStart, 0, 0);
+        }
         resp.getWriter().println(stream.toString());
 
 
@@ -99,9 +107,7 @@ public class LoginServlet extends HttpServlet {
             redirect.append("time=").append(time.toMillis())
                     .append("&db=").append(4)
                     .append("&dbTime=").append(dbCallsTime.toMillis());
-            System.out.println(redirect.toString());
             resp.sendRedirect(redirect.toString());
-
         }
 
         if (user != null && user.getPassword().equals(password)) {

@@ -25,17 +25,6 @@ public class SessionDao {
                 });
     }
 
-    public boolean isLoggedIn(String sessionId) throws SQLException {
-        return executor.execPreparedQuery("select user_id from current_sessions where session_id = ?", ResultSet::next,
-                ps -> {
-                    try {
-                        ps.setString(1, sessionId);
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                });
-    }
-
     public void remove(String sessionId) throws SQLException {
         executor.execPreparedUpdate("delete from current_sessions where session_id = ?",
                 ps -> {

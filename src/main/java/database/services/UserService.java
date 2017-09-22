@@ -17,4 +17,9 @@ public class UserService implements Service {
         UserDao dao = new UserDao(source.getConnection());
         return dao.get(username);
     }
+
+    public int getRating(String sessionId) {
+        UserDao dao = new UserDao(source.getConnection());
+        return dao.getRating(sessionId);
+    }
 }

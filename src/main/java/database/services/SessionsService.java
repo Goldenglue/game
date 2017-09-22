@@ -10,11 +10,6 @@ public class SessionsService implements Service {
         dao.add(sessionId, userId);
     }
 
-    public boolean isLoggedIn(String sessionId) throws SQLException {
-        SessionDao dao = new SessionDao(source.getConnection());
-        return dao.isLoggedIn(sessionId);
-    }
-
     public void endSession(String sessionId) throws SQLException {
         SessionDao dao = new SessionDao(source.getConnection());
         dao.remove(sessionId);

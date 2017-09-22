@@ -2,7 +2,7 @@ package servlets;
 
 import database.services.SessionsService;
 import freemarker.template.Template;
-import freemarker.template.TemplateException;
+import templater.PageGenHelper;
 import templater.PageGenerator;
 
 import javax.servlet.ServletException;
@@ -28,60 +28,50 @@ public class MainMenuServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        System.out.println("get in main menu");
         Instant pageGenStart = Instant.now();
         resp.setContentType("text/html;charset=utf-8");
+        resp.setStatus(HttpServletResponse.SC_OK);
         Map<String, Object> pageVariables = new HashMap<>();
 
-        try {
-            Instant serviceCheckStart = Instant.now();
-            boolean loggedIn = sessionsService.isLoggedIn(req.getSession().getId());
-            Duration dbCallDuration = Duration.between(serviceCheckStart, Instant.now());
-            if (!loggedIn) {
-                pageVariables.put("message", "");
 
-                resp.sendRedirect("/login");
-                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            } else {
-                resp.setStatus(HttpServletResponse.SC_OK);
-                String time = req.getParameter("time");
-                String db = req.getParameter("db");
-                String dbCalls = req.getParameter("dbTime");
+        String time = req.getParameter("time");
+        String db = req.getParameter("db");
+        String dbTime = req.getParameter("dbTime");
 
-
-                Template page = PageGenerator.instance().getPage("main.html");
-                Writer stream = new StringWriter();
-
-                Duration pageGenDuration = Duration.between(pageGenStart, Instant.now());
-                pageGenDuration = pageGenDuration.plusMillis(Long.parseLong(time));
-                pageVariables.put("time", pageGenDuration.toMillis());
-                pageVariables.put("requests", 1 + Long.parseLong(db));
-                pageVariables.put("requestsTime", dbCallDuration.toMillis() + Long.parseLong(dbCalls));
-
-                page.process(pageVariables, stream);
-
-                resp.getWriter().println(stream.toString());
-
-            }
-        } catch (SQLException | TemplateException e) {
-            e.printStackTrace();
+        Writer stream = new StringWriter();
+        if (time != null && db != null && dbTime != null) {
+            PageGenHelper.getPage("main.html", stream, pageVariables, pageGenStart.minusMillis(Long.parseLong(time)), Integer.parseInt(db), Long.parseLong(dbTime));
+        } else {
+            PageGenHelper.getPage("main.html", stream, pageVariables, pageGenStart, 0, 0);
         }
+        resp.getWriter().println(stream.toString());
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        Instant pageGenStart = Instant.now();
         resp.setContentType("text/html;charset=utf-8");
+        resp.setStatus(HttpServletResponse.SC_OK);
 
-        Map<String, Object> pageVariables = new HashMap<>();
-        pageVariables.put("message", "");
-
+        Instant sessionEndStart = Instant.now();
+        Duration dbTime = Duration.ZERO;
         try {
             sessionsService.endSession(req.getSession().getId());
+            dbTime = Duration.between(sessionEndStart, Instant.now());
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        req.getSession().invalidate();
 
-        resp.sendRedirect("/login");
-        resp.getWriter().println(PageGenerator.instance().getPage("index.html"));
-        resp.setStatus(HttpServletResponse.SC_OK);
+        Duration time = Duration.between(pageGenStart, Instant.now());
+        StringBuilder redirect = new StringBuilder();
+
+        redirect.append("/login?")
+                .append("time=").append(time.toMillis())
+                .append("&db=").append(1)
+                .append("&dbTime=").append(dbTime.toMillis());
+        resp.sendRedirect(redirect.toString());
+
     }
 }

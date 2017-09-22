@@ -2,7 +2,7 @@ package database.dao;
 
 import database.executor.Executor;
 import database.pojos.Character;
-import database.pojos.CharacterBuilder;
+import database.pojos.builders.CharacterBuilder;
 
 import java.sql.Connection;
 import java.sql.SQLException;

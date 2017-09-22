@@ -7,10 +7,14 @@
 </head>
 <body>
 <div class="container">
-    <p>Рейтинг: </p>
-    <form action="" method="post">
-        <button name="set_ready" value="ready" formaction="/main/duel">Начать Дуэль</button>
-    </form>
+    <p>Рейтинг: ${rating}</p>
+    <#if ready>
+        <p>Ожидание оппонента</p>
+        <#else>
+            <form action="" method="post">
+                <button name="set_ready" value="ready" formaction="/main/duel">Начать Дуэль</button>
+            </form>
+    </#if>
     <#include "footer.html">
 </div>
 </body>

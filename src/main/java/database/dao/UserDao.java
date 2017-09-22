@@ -48,7 +48,7 @@ public class UserDao {
                         user.setId(result.getInt("id"));
                         user.setUsername(result.getString("username"));
                         user.setPassword(result.getString("password"));
-                        user.setReputation(result.getInt("reputation"));
+                        user.setRating(result.getInt("rating"));
                         return user;
                     }
                     return null;
@@ -56,6 +56,22 @@ public class UserDao {
                 ps -> {
                     try {
                         ps.setString(1, username);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                });
+    }
+
+    public int getRating(String sessionId) {
+        return executor.execPreparedQuery("select rating from users inner join current_sessions on " +
+                        "current_sessions.session_id = ?",
+                result -> {
+                    result.next();
+                    return result.getInt(1);
+                },
+                ps -> {
+                    try {
+                        ps.setString(1, sessionId);
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }

@@ -11,12 +11,11 @@ import java.util.Map;
 
 public class PageGenHelper {
     public static void getPage(String page, Writer stream, Map<String, Object> pageVariables, Instant pageGenStart, int dbCalls, long dbCallsTime) {
-
-        Duration pageGenDuration = Duration.between(pageGenStart, Instant.now());
         Template template = PageGenerator.instance().getPage(page);
-        pageVariables.put("time", pageGenDuration.toMillis());
         pageVariables.put("requests", dbCalls);
         pageVariables.put("requestsTime", dbCallsTime);
+        Duration pageGenDuration = Duration.between(pageGenStart, Instant.now());
+        pageVariables.put("time", pageGenDuration.toMillis());
         try {
             template.process(pageVariables, stream);
         } catch (TemplateException | IOException e) {
