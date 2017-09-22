@@ -4,9 +4,6 @@ import database.pojos.User;
 import database.services.CharactersService;
 import database.services.SessionsService;
 import database.services.UserService;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import templater.PageGenerator;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -45,22 +42,14 @@ public class LoginServlet extends HttpServlet {
 
         try {
             if (!sessionsService.isLoggedIn(req.getSession().getId())) {
-                Template page = PageGenerator.instance().getPage("index.html");
                 Writer stream = new StringWriter();
-
-                Duration pageGenDuration = Duration.between(pageGenStart, Instant.now());
-                pageVariables.put("time", pageGenDuration.toMillis());
-                pageVariables.put("requests", 1);
-                pageVariables.put("requestsTime", 1);
-
-                page.process(pageVariables, stream);
-
+                PageGenHelper.getPage("index.html", stream, pageVariables, pageGenStart, 1, 1);
                 resp.getWriter().println(stream.toString());
             } else {
                 resp.sendRedirect("/main");
             }
 
-        } catch (SQLException | TemplateException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
@@ -77,62 +66,76 @@ public class LoginServlet extends HttpServlet {
 
         Map<String, Object> pageVariables = new HashMap<>();
         pageVariables.put("message", "");
-        pageVariables.put("requests", 1);
-        pageVariables.put("requestsTime", 1);
 
         resp.setContentType("text/html;charset=utf-8");
 
         User user = null;
+        Duration dbCallsTime = Duration.ZERO;
         try {
+            Instant userCallStart = Instant.now();
             user = userService.getByUsername(username);
+            dbCallsTime = dbCallsTime.plus(Duration.between(userCallStart, Instant.now()));
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        StringBuilder redirect = new StringBuilder().append("/main?");
         if (user == null && !password.equals("")) {
             try {
                 user = new User(username, password);
-                user.setId(userService.addNewUser(username, password));
+                Instant userAddStart = Instant.now();
+                int id = userService.addNewUser(username, password);
+                dbCallsTime = dbCallsTime.plus(Duration.between(userAddStart, Instant.now()));
+                user.setId(id);
 
+                Instant charAddStart = Instant.now();
                 charactersService.addNewCharacter(user);
+                dbCallsTime = dbCallsTime.plus(Duration.between(charAddStart, Instant.now()));
+
+                Instant sessionAddStart = Instant.now();
                 sessionsService.add(req.getSession().getId(), user.getId());
+                dbCallsTime = dbCallsTime.plus(Duration.between(sessionAddStart, Instant.now()));
             } catch (SQLException e) {
                 e.printStackTrace();
             }
             resp.setContentType("text/html;charset=utf-8");
             resp.setStatus(HttpServletResponse.SC_OK);
             Duration time = Duration.between(pageGenStart, Instant.now());
-            resp.sendRedirect("/main?time=" + time.toMillis());
+
+            redirect.append("time=").append(time.toMillis())
+                    .append("&db=").append(4)
+                    .append("&dbTime=").append(dbCallsTime.toMillis());
+            System.out.println(redirect.toString());
+            resp.sendRedirect(redirect.toString());
 
         }
 
         if (user != null && user.getPassword().equals(password)) {
             try {
+                Instant sessionAddStart = Instant.now();
                 sessionsService.add(req.getSession().getId(), user.getId());
+                dbCallsTime = dbCallsTime.plus(Duration.between(sessionAddStart, Instant.now()));
             } catch (SQLException e) {
                 e.printStackTrace();
             }
             resp.setContentType("text/html;charset=utf-8");
             resp.setStatus(HttpServletResponse.SC_OK);
+
             Duration time = Duration.between(pageGenStart, Instant.now());
-            //req.setAttribute("time", time.toMillis());
-            resp.sendRedirect("/main?time=" + time.toMillis());
+            redirect.append("time=").append(time.toMillis())
+                    .append("&db=").append(2)
+                    .append("&dbTime=").append(dbCallsTime.toMillis());
+
+            resp.sendRedirect(redirect.toString());
 
         } else {
             pageVariables.put("message", "Wrong password");
-
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-            Template page = PageGenerator.instance().getPage("index.html");
             Writer stream = new StringWriter();
-            Duration pageGenDuration = Duration.between(pageGenStart, Instant.now());
-            pageVariables.put("time", pageGenDuration.toMillis());
-            try {
-                page.process(pageVariables, stream);
-            } catch (TemplateException e) {
-                e.printStackTrace();
-            }
+            PageGenHelper.getPage("index.html", stream, pageVariables, pageGenStart, 1, 1);
             resp.getWriter().println(stream.toString());
         }
     }
+
 
 }

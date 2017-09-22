@@ -33,7 +33,10 @@ public class MainMenuServlet extends HttpServlet {
         Map<String, Object> pageVariables = new HashMap<>();
 
         try {
-            if (!sessionsService.isLoggedIn(req.getSession().getId())) {
+            Instant serviceCheckStart = Instant.now();
+            boolean loggedIn = sessionsService.isLoggedIn(req.getSession().getId());
+            Duration dbCallDuration = Duration.between(serviceCheckStart, Instant.now());
+            if (!loggedIn) {
                 pageVariables.put("message", "");
 
                 resp.sendRedirect("/login");
@@ -41,6 +44,9 @@ public class MainMenuServlet extends HttpServlet {
             } else {
                 resp.setStatus(HttpServletResponse.SC_OK);
                 String time = req.getParameter("time");
+                String db = req.getParameter("db");
+                String dbCalls = req.getParameter("dbTime");
+
 
                 Template page = PageGenerator.instance().getPage("main.html");
                 Writer stream = new StringWriter();
@@ -48,8 +54,8 @@ public class MainMenuServlet extends HttpServlet {
                 Duration pageGenDuration = Duration.between(pageGenStart, Instant.now());
                 pageGenDuration = pageGenDuration.plusMillis(Long.parseLong(time));
                 pageVariables.put("time", pageGenDuration.toMillis());
-                pageVariables.put("requests", 1);
-                pageVariables.put("requestsTime", 1);
+                pageVariables.put("requests", 1 + Long.parseLong(db));
+                pageVariables.put("requestsTime", dbCallDuration.toMillis() + Long.parseLong(dbCalls));
 
                 page.process(pageVariables, stream);
 
