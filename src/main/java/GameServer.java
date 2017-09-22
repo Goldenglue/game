@@ -1,15 +1,15 @@
 import database.services.CharactersService;
 import database.services.SessionsService;
 import database.services.UserService;
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.DefaultHandler;
-import org.eclipse.jetty.server.handler.HandlerList;
-import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.resource.Resource;
 import servlets.DuelServlet;
+import servlets.FightServlet;
 import servlets.LoginServlet;
 import servlets.MainMenuServlet;
 import servlets.filter.AuthenticationFilter;
@@ -23,22 +23,25 @@ public class GameServer {
         CharactersService charactersService = new CharactersService();
         SessionsService sessionsService = new SessionsService();
 
-        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        context.addServlet(new ServletHolder(new LoginServlet(userService, charactersService, sessionsService)), "/");
-        context.addServlet(new ServletHolder(new MainMenuServlet(sessionsService)), "/main");
-        context.addServlet(new ServletHolder(new DuelServlet(userService)), "/main/duel");
-        context.addFilter(new FilterHolder(new AuthenticationFilter()),"/*", EnumSet.of(DispatcherType.REQUEST));
-
-        ResourceHandler resourceHandler = new ResourceHandler();
-        /*resourceHandler.setWelcomeFiles(new String[]{"index.html"});
-        resourceHandler.setResourceBase(".");
-        resourceHandler.setDirectoriesListed(false);*/
-
-        HandlerList handlers = new HandlerList();
-        handlers.setHandlers(new Handler[]{resourceHandler, context, new DefaultHandler()});
-
         Server server = new Server(8080);
-        server.setHandler(handlers);
+
+        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+        context.addServlet(new ServletHolder(new LoginServlet(userService, charactersService, sessionsService)), "/login");
+        context.addServlet(new ServletHolder(new MainMenuServlet(sessionsService)), "/main");
+        ServletHolder duelServlet = context.addServlet(DuelServlet.class, "/duel");
+        duelServlet.setAsyncSupported(true);
+        context.addServlet(new ServletHolder(new FightServlet()),"/duel/fight");
+
+        context.setContextPath("/");
+        context.setBaseResource(Resource.newResource("src/main/resources"));
+
+        server.setHandler(context);
+
+        ServletHolder holderPwd = new ServletHolder("default", new DefaultServlet());
+        holderPwd.setInitParameter("dirAllowed", "true");
+        context.addServlet(holderPwd, "/");
+
+        context.addFilter(new FilterHolder(new AuthenticationFilter()), "/*", EnumSet.of(DispatcherType.REQUEST));
 
         server.start();
         server.join();

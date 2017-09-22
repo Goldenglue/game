@@ -4,7 +4,10 @@ import database.services.UserService;
 import templater.PageGenHelper;
 import templater.PageGenerator;
 
+import javax.servlet.AsyncContext;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,14 +20,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class DuelServlet extends HttpServlet {
     private final List<HttpServletResponse> polledResponses = new ArrayList<>();
-    private final UserService userService;
+    private volatile boolean alone = false;
+    /*private final UserService userService;
 
     public DuelServlet(UserService userService) {
         this.userService = userService;
-    }
+    }*/
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -32,9 +37,9 @@ public class DuelServlet extends HttpServlet {
         System.out.println("Get in duel servlet");
         Map<String, Object> pageVariables = new HashMap<>();
         Instant getRatingStart = Instant.now();
-        int rating = userService.getRating(req.getSession().getId());
+        //int rating = userService.getRating(req.getSession().getId());
         Duration dbCallTime = Duration.between(getRatingStart, Instant.now());
-        pageVariables.put("rating", rating);
+        pageVariables.put("rating", 10);
         pageVariables.put("ready", false);
 
         resp.setContentType("text/html;charset=utf-8");
@@ -47,13 +52,33 @@ public class DuelServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Instant pageGenStart = Instant.now();
-
         System.out.println("post in duel servlet");
-
+        Instant pageGenStart = Instant.now();
         resp.setContentType("text/html;charset=utf-8");
         resp.setStatus(HttpServletResponse.SC_OK);
-        if (polledResponses.isEmpty()) {
+        alone = !alone;
+
+        AsyncContext context = req.startAsync();
+        context.start(() -> {
+            while (alone) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+                HttpServletResponse response = (HttpServletResponse) context.getResponse();
+                response.sendRedirect("/duel/fight");
+                context.complete();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+
+
+        /*if (polledResponses.isEmpty()) {
             polledResponses.add(resp);
             Instant getRatingStart = Instant.now();
             int rating = userService.getRating(req.getSession().getId());
@@ -70,12 +95,10 @@ public class DuelServlet extends HttpServlet {
         } else {
             HttpServletResponse opponent = polledResponses.remove(0);
 
-            opponent.setContentType("text/html;charset=utf-8");
-            opponent.setStatus(HttpServletResponse.SC_OK);
-            opponent.getWriter().println("Fight begins!");
+            opponent.sendRedirect("/duel/fight");
 
-            resp.getWriter().println("Fight begins!");
-        }
+            resp.sendRedirect("/duel/fight");
+        }*/
     }
 
 }
