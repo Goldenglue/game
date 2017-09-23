@@ -16,11 +16,13 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class DuelServlet extends HttpServlet {
-    private volatile boolean alone = false;
+    private AtomicBoolean alone = new AtomicBoolean(false);
     private final UserService userService;
-    private int duelId = 0;
+    private AtomicInteger duelId = new AtomicInteger(0);
 
     public DuelServlet(UserService userService) {
         this.userService = userService;
@@ -56,11 +58,11 @@ public class DuelServlet extends HttpServlet {
 
         resp.setContentType("text/html;charset=utf-8");
         resp.setStatus(HttpServletResponse.SC_OK);
-        alone = !alone;
-        if (alone) {
-            ++duelId;
+        alone.set(!alone.get());
+        if (alone.get()) {
+            duelId.incrementAndGet();
             req.getSession().setAttribute("user", 1);
-            FightServlet.createNewDuel(duelId);
+            FightServlet.createNewDuel(duelId.get());
         } else {
             req.getSession().setAttribute("user", 2);
         }
@@ -69,7 +71,7 @@ public class DuelServlet extends HttpServlet {
         AsyncContext context = req.startAsync();
         context.setTimeout(0);
         context.start(() -> {
-            while (alone) {
+            while (alone.get()) {
                 try {
                     Thread.sleep(10);
                 } catch (InterruptedException e) {

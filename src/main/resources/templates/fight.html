@@ -10,12 +10,12 @@
     <div class="fight">
         <div id="user">
             <h4>${username}</h4>
-            <progress value="70" max="100"></progress>
+            <progress value=${userCurrHealth} max=${userMaxHealth}></progress>
             <p>Урон: ${userDmg}</p>
         </div>
         <div id="opponent">
             <h4>${opponent}</h4>
-            <progress value="50" max="100"></progress>
+            <progress value=${opponentCurrHealth} max=${opponentMaxHealth}></progress>
             <p>Урон: ${opponentDmg}</p>
             <form action="/duel/fight" method="post" style="display: inline">
                 <button class="btn">Атаковать</button>

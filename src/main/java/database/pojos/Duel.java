@@ -1,5 +1,6 @@
 package database.pojos;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +13,7 @@ public class Duel {
     private User user2;
     private Character character1;
     private Character character2;
-    private List<String> log;
+    private List<String> log = new ArrayList<>();
 
     public Duel() {
     }
@@ -63,6 +64,10 @@ public class Duel {
 
     public void setLog(List<String> log) {
         this.log = log;
+    }
+
+    public void addLogLine(String line) {
+        log.add(line);
     }
 
     @Override

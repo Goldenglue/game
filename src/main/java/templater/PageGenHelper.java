@@ -1,5 +1,6 @@
 package templater;
 
+import database.pojos.Duel;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
@@ -20,6 +21,24 @@ public class PageGenHelper {
             template.process(pageVariables, stream);
         } catch (TemplateException | IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void putFightStats(int userNum, Duel duel, Map<String, Object> pageVariables) {
+        if (userNum == 1) {
+            pageVariables.put("opponent", duel.getUser2().getUsername());
+            pageVariables.put("opponentDmg", duel.getCharacter2().getMaxDamage());
+            pageVariables.put("userCurrHealth", duel.getCharacter1().getCurrentHealth());
+            pageVariables.put("userMaxHealth", duel.getCharacter1().getMaxHealth());
+            pageVariables.put("opponentCurrHealth", duel.getCharacter2().getCurrentHealth());
+            pageVariables.put("opponentMaxHealth", duel.getCharacter2().getMaxHealth());
+        } else {
+            pageVariables.put("opponent", duel.getUser1().getUsername());
+            pageVariables.put("opponentDmg", duel.getCharacter1().getMaxDamage());
+            pageVariables.put("userCurrHealth", duel.getCharacter2().getCurrentHealth());
+            pageVariables.put("userMaxHealth", duel.getCharacter2().getMaxHealth());
+            pageVariables.put("opponentCurrHealth", duel.getCharacter1().getCurrentHealth());
+            pageVariables.put("opponentMaxHealth", duel.getCharacter1().getMaxHealth());
         }
     }
 }

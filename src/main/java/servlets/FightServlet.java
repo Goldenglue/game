@@ -67,17 +67,10 @@ public class FightServlet extends HttpServlet {
                     e.printStackTrace();
                 }
             }
-            if (userNum == 1) {
-                pageVariables.put("opponent", duel.getUser2().getUsername());
-                pageVariables.put("opponentDmg", duel.getCharacter2().getMaxDamage());
-            } else {
-                pageVariables.put("opponent", duel.getUser1().getUsername());
-                pageVariables.put("opponentDmg", duel.getCharacter1().getMaxDamage());
-            }
-            System.out.println(pageVariables);
-            Writer stream = new StringWriter();
-            PageGenHelper.getPage("fight.html", stream, pageVariables, pageGenStart, 0, 0);
+            PageGenHelper.putFightStats(userNum, duel, pageVariables);
 
+            Writer stream = new StringWriter();
+            PageGenHelper.getPage("fight.html", stream, pageVariables, pageGenStart, 2, 0);
             try {
                 resp.getWriter().println(stream.toString());
             } catch (IOException e) {
@@ -89,22 +82,30 @@ public class FightServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        System.out.println("post in fight servlet");
         Instant pageGenStart = Instant.now();
 
+        Map<String, Object> pageVariables = new HashMap<>();
         int duelId = (int) req.getSession().getAttribute("duelId");
         Duel duel = ongoingDuels.get(duelId);
 
-        int user = (int) req.getSession().getAttribute("user");
+        int userNum = (int) req.getSession().getAttribute("user");
         Character character2 = duel.getCharacter2();
         Character character1 = duel.getCharacter1();
-        if (user == 1) {
+        if (userNum == 1) {
             character2.setCurrentHealth(character2.getCurrentHealth() - character1.getCurrentDamage());
+            pageVariables.put("username", duel.getUser1().getUsername());
+            pageVariables.put("userDmg", duel.getCharacter1().getMaxDamage());
         } else {
             character1.setCurrentHealth(character1.getCurrentHealth() - character2.getCurrentDamage());
+            pageVariables.put("username", duel.getUser2().getUsername());
+            pageVariables.put("userDmg", duel.getCharacter2().getMaxDamage());
         }
 
+        PageGenHelper.putFightStats(userNum, duel, pageVariables);
+
         Writer stream = new StringWriter();
-        PageGenHelper.getPage("fight.html", stream, new HashMap<>(), pageGenStart, 0, 0);
+        PageGenHelper.getPage("fight.html", stream,pageVariables, pageGenStart, 0, 0);
 
         resp.setContentType("text/html;charset=utf-8");
         resp.setStatus(HttpServletResponse.SC_OK);
