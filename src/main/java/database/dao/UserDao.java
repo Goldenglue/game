@@ -47,9 +47,9 @@ public class UserDao {
                 });
     }
 
-    public User getBySession(String sessionId) throws SQLException{
-        return executor.execPreparedQuery("select * from users inner join current_sessions on " +
-                        "current_sessions.session_id = ?",
+    public User getBySession(String sessionId) throws SQLException {
+        return executor.execPreparedQuery("select * from users where id = " +
+                        "(select user_id from current_sessions where session_id = ?) ",
                 result -> {
                     result.next();
                     User user = new User();
@@ -68,9 +68,9 @@ public class UserDao {
                 });
     }
 
-    public int getRating(String sessionId)  throws SQLException{
-        return executor.execPreparedQuery("select rating from users inner join current_sessions on " +
-                        "current_sessions.session_id = ?",
+    public int getRating(String sessionId) throws SQLException {
+        return executor.execPreparedQuery("select rating from users where id =" +
+                        " (select user_id from current_sessions where session_id = ?)",
                 result -> {
                     result.next();
                     return result.getInt(1);

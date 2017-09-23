@@ -20,6 +20,7 @@ import java.util.Map;
 public class DuelServlet extends HttpServlet {
     private volatile boolean alone = false;
     private final UserService userService;
+    private int duelId = 0;
 
     public DuelServlet(UserService userService) {
         this.userService = userService;
@@ -52,10 +53,18 @@ public class DuelServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         System.out.println("post in duel servlet");
-        req.getSession().setAttribute("duelId", 2);
+
         resp.setContentType("text/html;charset=utf-8");
         resp.setStatus(HttpServletResponse.SC_OK);
         alone = !alone;
+        if (alone) {
+            ++duelId;
+            req.getSession().setAttribute("user", 1);
+            FightServlet.createNewDuel(duelId);
+        } else {
+            req.getSession().setAttribute("user", 2);
+        }
+        req.getSession().setAttribute("duelId", duelId);
 
         AsyncContext context = req.startAsync();
         context.setTimeout(0);

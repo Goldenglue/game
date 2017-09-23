@@ -64,4 +64,15 @@ public class Duel {
     public void setLog(List<String> log) {
         this.log = log;
     }
+
+    @Override
+    public String toString() {
+        return "Duel{" +
+                "duelId=" + duelId +
+                ", user1=" + user1.getUsername() +
+                ", user2=" + user2.getUsername() +
+                ", character1=" + character1.getOwnerId() +
+                ", character2=" + character2.getOwnerId() +
+                '}';
+    }
 }
