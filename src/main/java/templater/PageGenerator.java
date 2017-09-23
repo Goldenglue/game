@@ -32,7 +32,7 @@ public class PageGenerator {
     private PageGenerator() {
         cfg = new Configuration(Configuration.VERSION_2_3_26);
         try {
-            cfg.setDirectoryForTemplateLoading(new File("E:\\Users\\IvanOP\\IdeaProjects\\game\\src\\main\\resources"));
+            cfg.setDirectoryForTemplateLoading(new File("src/main/resources"));
         } catch (IOException e) {
             e.printStackTrace();
         }

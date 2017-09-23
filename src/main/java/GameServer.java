@@ -28,8 +28,7 @@ public class GameServer {
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.addServlet(new ServletHolder(new LoginServlet(userService, charactersService, sessionsService)), "/login");
         context.addServlet(new ServletHolder(new MainMenuServlet(sessionsService)), "/main");
-        ServletHolder duelServlet = context.addServlet(DuelServlet.class, "/duel");
-        duelServlet.setAsyncSupported(true);
+        context.addServlet(new ServletHolder(new DuelServlet(userService)), "/duel");
         context.addServlet(new ServletHolder(new FightServlet()),"/duel/fight");
 
         context.setContextPath("/");
@@ -37,9 +36,9 @@ public class GameServer {
 
         server.setHandler(context);
 
-        ServletHolder holderPwd = new ServletHolder("default", new DefaultServlet());
-        holderPwd.setInitParameter("dirAllowed", "true");
-        context.addServlet(holderPwd, "/");
+        ServletHolder defaultHolder = new ServletHolder("default", new DefaultServlet());
+        defaultHolder.setInitParameter("dirAllowed", "true");
+        context.addServlet(defaultHolder, "/");
 
         context.addFilter(new FilterHolder(new AuthenticationFilter()), "/*", EnumSet.of(DispatcherType.REQUEST));
 

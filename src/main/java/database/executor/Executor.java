@@ -23,9 +23,9 @@ public class Executor {
         int key = 0;
         try (PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             consumer.accept(ps);
-            ps.executeUpdate();
+            int updatedRows = ps.executeUpdate();
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
-                key = generatedKeys.next() ? generatedKeys.getInt(1) : 0;
+                key = generatedKeys.next() ? generatedKeys.getInt(1) : updatedRows;
             }
 
         } catch (SQLException e) {
