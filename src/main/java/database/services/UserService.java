@@ -18,8 +18,13 @@ public class UserService implements Service {
         return dao.get(username);
     }
 
-    public int getRating(String sessionId) {
+    public int getRating(String sessionId) throws SQLException {
         UserDao dao = new UserDao(source.getConnection());
         return dao.getRating(sessionId);
+    }
+
+    public User getBySession(String sessionId) throws SQLException {
+        UserDao dao = new UserDao(source.getConnection());
+        return dao.getBySession(sessionId);
     }
 }

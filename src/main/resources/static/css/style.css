@@ -34,7 +34,7 @@
 
 .container input[type=submit]:hover {
     background-color: #37a1db;
-   text-decoration: none;
+    text-decoration: none;
 }
 
 .footer {
@@ -50,7 +50,7 @@
     padding: 0 8px;
 }
 
-.menu  {
+.menu {
     width: inherit;
 
 }
@@ -58,7 +58,6 @@
 .menu ul {
     list-style: none inside none;
     padding: 8px 16px;
-
 }
 
 .menu li a {
@@ -74,13 +73,65 @@
     color: white;
 }
 
-.user {
+.fight:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.fight {
+    padding-bottom: 40px;
+    /*border-bottom: 2px solid #c0c0c0;*/
+}
+
+#user {
     float: left;
     width: 40%;
 }
 
-.opponent {
+#opponent {
     float: right;
     width: 40%;
+
 }
 
+.btn {
+    width: 100%;
+    background-color: #a8302c;
+    color: #ffffff;
+    font-size: 20px;
+    border-radius: 5px;
+    border: none;
+}
+
+.btn:hover {
+    background-color: #da352f;
+    text-decoration: none;
+}
+
+.log {
+    border: 2px solid rgb(0, 121, 219);
+    border-radius: 4px;
+    overflow-y: auto;
+    max-height: 200px;
+    background-color: #fdfdfd;
+}
+
+.log ul {
+    list-style: none inside none;
+    padding: 8px 16px;
+    text-align: left;
+    font-style: italic;
+}
+
+progress {
+    border-radius: 2px;
+}
+
+progress::-webkit-progress-value {
+    background: #dc373e;
+}
+
+progress::-webkit-progress-bar {
+    background: #fff;
+}

@@ -11,11 +11,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class DuelServlet extends HttpServlet {
     private volatile boolean alone = false;
@@ -31,7 +31,12 @@ public class DuelServlet extends HttpServlet {
         System.out.println("Get in duel servlet");
         Map<String, Object> pageVariables = new HashMap<>();
         Instant getRatingStart = Instant.now();
-        int rating = userService.getRating(req.getSession().getId());
+        int rating = 0;
+        try {
+            rating = userService.getRating(req.getSession().getId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         Duration dbCallTime = Duration.between(getRatingStart, Instant.now());
         pageVariables.put("rating", rating);
         pageVariables.put("ready", false);
@@ -47,7 +52,7 @@ public class DuelServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         System.out.println("post in duel servlet");
-        Instant pageGenStart = Instant.now();
+        req.getSession().setAttribute("duelId", 2);
         resp.setContentType("text/html;charset=utf-8");
         resp.setStatus(HttpServletResponse.SC_OK);
         alone = !alone;
@@ -70,30 +75,6 @@ public class DuelServlet extends HttpServlet {
                 e.printStackTrace();
             }
         });
-
-
-
-        /*if (polledResponses.isEmpty()) {
-            polledResponses.add(resp);
-            Instant getRatingStart = Instant.now();
-            int rating = userService.getRating(req.getSession().getId());
-            Duration dbCallTime = Duration.between(getRatingStart, Instant.now());
-
-            Map<String, Object> pageVariables = new HashMap<>();
-            pageVariables.put("rating",rating);
-            pageVariables.put("ready", true);
-
-            Writer stream = new StringWriter();
-            PageGenHelper.getPage("duel.html", stream, pageVariables, pageGenStart, 1, dbCallTime.toMillis());
-
-            resp.getWriter().println(stream.toString());
-        } else {
-            HttpServletResponse opponent = polledResponses.remove(0);
-
-            opponent.sendRedirect("/duel/fight");
-
-            resp.sendRedirect("/duel/fight");
-        }*/
     }
 
 }

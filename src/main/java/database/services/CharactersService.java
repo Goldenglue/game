@@ -14,4 +14,8 @@ public class CharactersService implements Service {
         return dao.add(character);
     }
 
+    public Character get(int id) throws SQLException {
+        CharacterDao dao = new CharacterDao(source.getConnection());
+        return dao.get(id);
+    }
 }

@@ -2,7 +2,6 @@ import database.services.CharactersService;
 import database.services.SessionsService;
 import database.services.UserService;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -26,10 +25,12 @@ public class GameServer {
         Server server = new Server(8080);
 
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+        context.addFilter(new FilterHolder(new AuthenticationFilter()), "/*", EnumSet.of(DispatcherType.REQUEST));
+
         context.addServlet(new ServletHolder(new LoginServlet(userService, charactersService, sessionsService)), "/login");
         context.addServlet(new ServletHolder(new MainMenuServlet(sessionsService)), "/main");
         context.addServlet(new ServletHolder(new DuelServlet(userService)), "/duel");
-        context.addServlet(new ServletHolder(new FightServlet()),"/duel/fight");
+        context.addServlet(new ServletHolder(new FightServlet(charactersService, userService)), "/duel/fight");
 
         context.setContextPath("/");
         context.setBaseResource(Resource.newResource("src/main/resources"));
@@ -40,10 +41,7 @@ public class GameServer {
         defaultHolder.setInitParameter("dirAllowed", "true");
         context.addServlet(defaultHolder, "/");
 
-        context.addFilter(new FilterHolder(new AuthenticationFilter()), "/*", EnumSet.of(DispatcherType.REQUEST));
-
         server.start();
         server.join();
     }
-
 }

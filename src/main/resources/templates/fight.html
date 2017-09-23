@@ -7,18 +7,27 @@
 </head>
 <body>
 <div class="container">
-    <div class="user">
-        <h4>User</h4>
-        <progress value="70" max="100"></progress>
-        <p>Урон: 11</p>
+    <div class="fight">
+        <div id="user">
+            <h4>User</h4>
+            <progress value="70" max="100"></progress>
+            <p>Урон: 11</p>
+        </div>
+        <div id="opponent">
+            <h4>Opponent</h4>
+            <progress value="50" max="100"></progress>
+            <p>Урон: 10</p>
+            <form action="/duel/fight" method="post" style="display: inline">
+                <button class="btn">Атаковать</button>
+            </form>
+        </div>
     </div>
-    <div class="opponent">
-        <h4>Opponent</h4>
-        <progress value="50" max="100"></progress>
-        <p>Урон: 10</p>
-        <button>Атковать</button>
+    <div class="log">
+        <ul>
 
+        </ul>
     </div>
+    <#include "footer.html">
 </div>
 </body>
 </html>
