@@ -15,6 +15,7 @@ public class DataSource {
 
     public DataSource() {
         this.connection = createConnection();
+        setUpDatabase(this.connection);
     }
 
     private static Connection createConnection() {
@@ -48,11 +49,15 @@ public class DataSource {
     }
 
     private static String getPassword() throws IOException {
-        Path path = Paths.get("databaseRootPassword.txt");
+        Path path = Paths.get("password.txt");
         if (Files.exists(path)) {
             return Files.readAllLines(path).get(0);
         } else {
             throw new FileNotFoundException();
         }
+    }
+
+    private static void setUpDatabase(Connection connection) {
+
     }
 }

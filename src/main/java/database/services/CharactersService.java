@@ -1,8 +1,8 @@
 package database.services;
 
 import database.dao.CharacterDao;
-import database.pojos.Character;
-import database.pojos.User;
+import pojos.Character;
+import pojos.User;
 
 import java.sql.SQLException;
 

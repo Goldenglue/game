@@ -1,8 +1,8 @@
 package templater;
 
-import database.pojos.Duel;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import pojos.Duel;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -24,22 +24,13 @@ public class PageGenHelper {
         }
     }
 
-    public static void putFightStats(int userNum, Duel duel, Map<String, Object> pageVariables) {
-        if (userNum == 1) {
-            pageVariables.put("opponent", duel.getUser2().getUsername());
-            pageVariables.put("opponentDmg", duel.getCharacter2().getMaxDamage());
-            pageVariables.put("userCurrHealth", duel.getCharacter1().getCurrentHealth());
-            pageVariables.put("userMaxHealth", duel.getCharacter1().getMaxHealth());
-            pageVariables.put("opponentCurrHealth", duel.getCharacter2().getCurrentHealth());
-            pageVariables.put("opponentMaxHealth", duel.getCharacter2().getMaxHealth());
-        } else {
-            pageVariables.put("opponent", duel.getUser1().getUsername());
-            pageVariables.put("opponentDmg", duel.getCharacter1().getMaxDamage());
-            pageVariables.put("userCurrHealth", duel.getCharacter2().getCurrentHealth());
-            pageVariables.put("userMaxHealth", duel.getCharacter2().getMaxHealth());
-            pageVariables.put("opponentCurrHealth", duel.getCharacter1().getCurrentHealth());
-            pageVariables.put("opponentMaxHealth", duel.getCharacter1().getMaxHealth());
-        }
-        pageVariables.put("lines", duel.getLog());
+    public static void putFightStats(int userId, int opponentId, Duel duel, Map<String, Object> pageVariables) {
+        pageVariables.put("opponent", duel.getUsers().get(opponentId).getUsername());
+        pageVariables.put("opponentDmg", duel.getCharacters().get(opponentId).getMaxDamage());
+        pageVariables.put("userCurrHealth", duel.getCharacters().get(userId).getCurrentHealth());
+        pageVariables.put("userMaxHealth", duel.getCharacters().get(userId).getMaxHealth());
+        pageVariables.put("opponentCurrHealth", duel.getCharacters().get(opponentId).getCurrentHealth());
+        pageVariables.put("opponentMaxHealth", duel.getCharacters().get(opponentId).getMaxHealth());
+        pageVariables.put("logs", duel.getLogs().get(userId));
     }
 }

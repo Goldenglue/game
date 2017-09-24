@@ -1,13 +1,10 @@
 package servlets;
 
-import database.pojos.User;
+import pojos.User;
 import database.services.CharactersService;
 import database.services.SessionsService;
 import database.services.UserService;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
 import templater.PageGenHelper;
-import templater.PageGenerator;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

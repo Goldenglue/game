@@ -1,4 +1,4 @@
-package database.pojos;
+package pojos;
 
 public class Character {
     private int id;
@@ -70,5 +70,9 @@ public class Character {
 
     public void setOwnerId(int ownerId) {
         this.ownerId = ownerId;
+    }
+
+    public void reduceHealth(int currentDamage) {
+        this.currentHealth -= currentDamage;
     }
 }

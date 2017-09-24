@@ -1,4 +1,4 @@
-package database.pojos;
+package pojos;
 
 public class User {
     private int id;

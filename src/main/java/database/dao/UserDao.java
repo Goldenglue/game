@@ -1,7 +1,7 @@
 package database.dao;
 
 import database.executor.Executor;
-import database.pojos.User;
+import pojos.User;
 
 import java.sql.Connection;
 import java.sql.SQLException;

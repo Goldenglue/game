@@ -7,6 +7,7 @@
 </head>
 <body>
 <div class="container">
+    <#if going>
     <div class="fight">
         <div id="user">
             <h4>${username}</h4>
@@ -22,10 +23,15 @@
             </form>
         </div>
     </div>
+        <#else>
+            <form action="/main" method="post" style="display: inline">
+                <input type="submit" value="Выход" class="login">
+            </form>
+    </#if>
     <div class="log">
         <ul>
-            <#list lines as line>
-                <li>${line}</li>
+            <#list logs as log>
+                <li>${log}</li>
             </#list>
         </ul>
     </div>

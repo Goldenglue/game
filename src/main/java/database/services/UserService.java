@@ -1,7 +1,7 @@
 package database.services;
 
 import database.dao.UserDao;
-import database.pojos.User;
+import pojos.User;
 
 import java.sql.SQLException;
 

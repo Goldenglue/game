@@ -61,12 +61,14 @@ public class DuelServlet extends HttpServlet {
         alone.set(!alone.get());
         if (alone.get()) {
             duelId.incrementAndGet();
-            req.getSession().setAttribute("user", 1);
             FightServlet.createNewDuel(duelId.get());
+            req.getSession().setAttribute("user", 1);
+            req.getSession().setAttribute("opponent", 2);
         } else {
             req.getSession().setAttribute("user", 2);
+            req.getSession().setAttribute("opponent", 1);
         }
-        req.getSession().setAttribute("duelId", duelId);
+        req.getSession().setAttribute("duelId", duelId.get());
 
         AsyncContext context = req.startAsync();
         context.setTimeout(0);
