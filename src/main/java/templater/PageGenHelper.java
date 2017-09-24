@@ -40,5 +40,6 @@ public class PageGenHelper {
             pageVariables.put("opponentCurrHealth", duel.getCharacter1().getCurrentHealth());
             pageVariables.put("opponentMaxHealth", duel.getCharacter1().getMaxHealth());
         }
+        pageVariables.put("lines", duel.getLog());
     }
 }

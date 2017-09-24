@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class FightServlet extends HttpServlet {
     private static final Map<Integer, Duel> ongoingDuels = new HashMap<>();
@@ -39,7 +40,7 @@ public class FightServlet extends HttpServlet {
         Map<String, Object> pageVariables = new HashMap<>();
 
         int userNum = (int) req.getSession().getAttribute("user");
-        int duelId = (int) req.getSession().getAttribute("duelId");
+        int duelId = ((AtomicInteger) req.getSession().getAttribute("duelId")).get();
         try {
             User user = userService.getBySession(req.getSession().getId());
             Character character = charactersService.get(user.getId());
@@ -86,7 +87,7 @@ public class FightServlet extends HttpServlet {
         Instant pageGenStart = Instant.now();
 
         Map<String, Object> pageVariables = new HashMap<>();
-        int duelId = (int) req.getSession().getAttribute("duelId");
+        int duelId = ((AtomicInteger) req.getSession().getAttribute("duelId")).get();
         Duel duel = ongoingDuels.get(duelId);
 
         int userNum = (int) req.getSession().getAttribute("user");
@@ -101,11 +102,12 @@ public class FightServlet extends HttpServlet {
             pageVariables.put("username", duel.getUser2().getUsername());
             pageVariables.put("userDmg", duel.getCharacter2().getMaxDamage());
         }
+        duel.addLogLine("Удар");
 
         PageGenHelper.putFightStats(userNum, duel, pageVariables);
 
         Writer stream = new StringWriter();
-        PageGenHelper.getPage("fight.html", stream,pageVariables, pageGenStart, 0, 0);
+        PageGenHelper.getPage("fight.html", stream, pageVariables, pageGenStart, 0, 0);
 
         resp.setContentType("text/html;charset=utf-8");
         resp.setStatus(HttpServletResponse.SC_OK);

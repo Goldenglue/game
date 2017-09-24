@@ -24,7 +24,9 @@
     </div>
     <div class="log">
         <ul>
-
+            <#list lines as line>
+                <li>${line}</li>
+            </#list>
         </ul>
     </div>
     <#include "footer.html">
