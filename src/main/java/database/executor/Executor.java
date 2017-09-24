@@ -10,15 +10,6 @@ public class Executor {
         this.connection = connection;
     }
 
-    public <T> T execQuery(String query, ResultHandler<T> handler) throws SQLException {
-        try (Statement stmt = connection.createStatement()) {
-            stmt.execute(query);
-            try (ResultSet result = stmt.getResultSet()) {
-                return handler.handle(result);
-            }
-        }
-    }
-
     public int execPreparedUpdate(String query, Consumer<PreparedStatement> consumer) {
         int key = 0;
         try (PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {

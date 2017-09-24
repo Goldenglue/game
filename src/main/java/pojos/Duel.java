@@ -1,16 +1,25 @@
 package pojos;
 
+import processors.DuelProcessor;
+
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Duel {
     private final Map<Integer, User> users = new HashMap<>();
     private final Map<Integer, Character> characters = new HashMap<>();
     private final Map<Integer, List<String>> logs = new HashMap<>();
-    private boolean ready = false;
+    private final DuelProcessor duelProcessor;
+    private AtomicBoolean ready = new AtomicBoolean(false);
+    private Instant startMoment;
+
 
     public Duel() {
+        this.duelProcessor = new DuelProcessor(this);
     }
 
     public void addUser(int userId, User user) {
@@ -41,12 +50,24 @@ public class Duel {
         return logs;
     }
 
-    public void changeStatus() {
-        ready = !ready;
+    public void setReady() {
+        ready.set(true);
     }
 
     public boolean getStatus() {
-        return ready;
+        return ready.get();
+    }
+
+    public void start() {
+        startMoment = Instant.now();
+    }
+
+    public long secondsAfterStart() {
+        return Duration.between(startMoment, Instant.now()).getSeconds();
+    }
+
+    public DuelProcessor getDuelProcessor() {
+        return duelProcessor;
     }
 
     @Override
@@ -58,4 +79,6 @@ public class Duel {
                 ", ready=" + ready +
                 '}';
     }
+
+
 }

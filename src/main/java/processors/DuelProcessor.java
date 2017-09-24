@@ -1,3 +1,5 @@
+package processors;
+
 import pojos.Character;
 import pojos.Duel;
 import pojos.User;
@@ -16,7 +18,7 @@ public class DuelProcessor {
         this.logs = duel.getLogs();
     }
 
-    public boolean process(int userId, int opponentId) {
+    public synchronized boolean process(int userId, int opponentId) {
         return checkFightState(userId, opponentId) && dealDmg(userId, opponentId);
     }
 

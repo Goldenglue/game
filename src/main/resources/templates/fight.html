@@ -7,7 +7,7 @@
 </head>
 <body>
 <div class="container">
-    <#if going>
+    <#if going!true>
     <div class="fight">
         <div id="user">
             <h4>${username}</h4>
@@ -18,15 +18,21 @@
             <h4>${opponent}</h4>
             <progress value=${opponentCurrHealth} max=${opponentMaxHealth}></progress>
             <p>Урон: ${opponentDmg}</p>
-            <form action="/duel/fight" method="post" style="display: inline">
-                <button class="btn">Атаковать</button>
-            </form>
+            <#if waiting!false>
+                <#else>
+                    <form action="/duel/fight" method="post" style="display: inline">
+                        <button class="btn">Атаковать</button>
+                    </form>
+            </#if>
         </div>
     </div>
         <#else>
-            <form action="/main" method="post" style="display: inline">
-                <input type="submit" value="Выход" class="login">
+            <form action="/main" method="get">
+                <input type="submit" value="Выйти в меню" class="login">
             </form>
+    </#if>
+    <#if waiting!false>
+        <h2>Время до начала матча: #{timeBeforeStart}</h2>
     </#if>
     <div class="log">
         <ul>

@@ -115,6 +115,7 @@
     overflow-y: auto;
     max-height: 200px;
     background-color: #fdfdfd;
+    margin-top: 20px;
 }
 
 .log ul {

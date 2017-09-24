@@ -25,6 +25,8 @@ public class PageGenHelper {
     }
 
     public static void putFightStats(int userId, int opponentId, Duel duel, Map<String, Object> pageVariables) {
+        pageVariables.put("username", duel.getUsers().get(userId).getUsername());
+        pageVariables.put("userDmg", duel.getCharacters().get(userId).getCurrentDamage());
         pageVariables.put("opponent", duel.getUsers().get(opponentId).getUsername());
         pageVariables.put("opponentDmg", duel.getCharacters().get(opponentId).getMaxDamage());
         pageVariables.put("userCurrHealth", duel.getCharacters().get(userId).getCurrentHealth());

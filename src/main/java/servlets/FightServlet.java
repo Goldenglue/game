@@ -1,10 +1,11 @@
 package servlets;
 
+import database.services.CharactersService;
+import database.services.UserService;
 import pojos.Character;
 import pojos.Duel;
 import pojos.User;
-import database.services.CharactersService;
-import database.services.UserService;
+import processors.DuelProcessor;
 import templater.PageGenHelper;
 
 import javax.servlet.AsyncContext;
@@ -35,43 +36,64 @@ public class FightServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         System.out.println("get in fight servlet");
         Instant pageGenStart = Instant.now();
-        resp.setContentType("text/html;charset=utf-8");
-        resp.setStatus(HttpServletResponse.SC_OK);
+
         Map<String, Object> pageVariables = new HashMap<>();
 
         int userId = (int) req.getSession().getAttribute("user");
         int opponentId = (int) req.getSession().getAttribute("opponent");
         int duelId = (int) req.getSession().getAttribute("duelId");
+        Duel duel = ongoingDuels.get(duelId);
+        if (duel.getStatus()) {
+            long secondsAfterStart = duel.secondsAfterStart();
+            if (secondsAfterStart <= 60) {
+                resp.setIntHeader("Refresh", 1);
+                pageVariables.put("waiting", true);
+                pageVariables.put("timeBeforeStart", 60 - secondsAfterStart);
+            } else {
+                pageVariables.put("waiting", false);
+            }
+            Writer stream = new StringWriter();
+
+            PageGenHelper.putFightStats(userId, opponentId, duel, pageVariables);
+            PageGenHelper.getPage("fight.html", stream, pageVariables, pageGenStart, 0, 0);
+
+            resp.setContentType("text/html;charset=utf-8");
+            resp.setStatus(HttpServletResponse.SC_OK);
+            resp.getWriter().println(stream.toString());
+            return;
+        }
         try {
             User user = userService.getBySession(req.getSession().getId());
             Character character = charactersService.get(user.getId());
-            Duel duel = ongoingDuels.get(duelId);
             duel.addUser(userId, user);
             duel.addCharacter(userId, character);
             duel.addLog(userId, new ArrayList<>());
-
-            pageVariables.put("username", user.getUsername());
-            pageVariables.put("userDmg", character.getMaxDamage());
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
+        //TODO create a somewhat smart way to check if everyone is ready
         AsyncContext context = req.startAsync();
         context.start(() -> {
-            Duel duel = ongoingDuels.get(duelId);
-            while (duel.getLogs().size() < 2) {
+            while (duel.getCharacters().size() < 2) {
                 try {
                     Thread.sleep(10);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-            pageVariables.put("going", true);
-            PageGenHelper.putFightStats(userId, opponentId,  duel, pageVariables);
+            duel.start();
+            duel.setReady();
+            pageVariables.put("waiting", true);
+            pageVariables.put("timeBeforeStart", 60 - duel.secondsAfterStart());
+            PageGenHelper.putFightStats(userId, opponentId, duel, pageVariables);
 
             Writer stream = new StringWriter();
             PageGenHelper.getPage("fight.html", stream, pageVariables, pageGenStart, 2, 0);
             try {
+                resp.setIntHeader("Refresh", 1);
+                resp.setContentType("text/html;charset=utf-8");
+                resp.setStatus(HttpServletResponse.SC_OK);
                 resp.getWriter().println(stream.toString());
             } catch (IOException e) {
                 e.printStackTrace();
@@ -86,13 +108,23 @@ public class FightServlet extends HttpServlet {
         Instant pageGenStart = Instant.now();
 
         Map<String, Object> pageVariables = new HashMap<>();
+
         int duelId = (int) req.getSession().getAttribute("duelId");
         int opponentId = (int) req.getSession().getAttribute("opponent");
+        int userId = (int) req.getSession().getAttribute("user");
+
         Duel duel = ongoingDuels.get(duelId);
-
-        int userNum = (int) req.getSession().getAttribute("user");
-
-        PageGenHelper.putFightStats(userNum, opponentId, duel, pageVariables);
+        DuelProcessor duelProcessor = duel.getDuelProcessor();
+        if (duelProcessor.process(userId, opponentId)) {
+            pageVariables.put("going", true);
+        } else {
+            pageVariables.put("going", false);
+            req.getSession().removeAttribute("duelId");
+            req.getSession().removeAttribute("user");
+            req.getSession().removeAttribute("opponent");
+        }
+        pageVariables.put("username", duel.getUsers().get(userId).getUsername());
+        PageGenHelper.putFightStats(userId, opponentId, duel, pageVariables);
 
         Writer stream = new StringWriter();
         PageGenHelper.getPage("fight.html", stream, pageVariables, pageGenStart, 0, 0);
