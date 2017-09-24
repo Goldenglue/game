@@ -33,6 +33,10 @@ public class Duel {
         return characters;
     }
 
+    public void addLog(int userId, List<String> log) {
+        logs.put(userId, log);
+    }
+
     public Map<Integer, List<String>> getLogs() {
         return logs;
     }
@@ -43,5 +47,15 @@ public class Duel {
 
     public boolean getStatus() {
         return ready;
+    }
+
+    @Override
+    public String toString() {
+        return "Duel{" +
+                "users=" + users +
+                ", characters=" + characters +
+                ", logs=" + logs +
+                ", ready=" + ready +
+                '}';
     }
 }

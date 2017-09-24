@@ -17,6 +17,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,6 +48,7 @@ public class FightServlet extends HttpServlet {
             Duel duel = ongoingDuels.get(duelId);
             duel.addUser(userId, user);
             duel.addCharacter(userId, character);
+            duel.addLog(userId, new ArrayList<>());
 
             pageVariables.put("username", user.getUsername());
             pageVariables.put("userDmg", character.getMaxDamage());
@@ -57,7 +59,7 @@ public class FightServlet extends HttpServlet {
         AsyncContext context = req.startAsync();
         context.start(() -> {
             Duel duel = ongoingDuels.get(duelId);
-            while (duel.getStatus()) {
+            while (duel.getLogs().size() < 2) {
                 try {
                     Thread.sleep(10);
                 } catch (InterruptedException e) {
