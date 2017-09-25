@@ -35,7 +35,6 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Instant pageGenStart = Instant.now();
-        System.out.println("get in login servlet");
 
         String time = req.getParameter("time");
         String db = req.getParameter("db");
@@ -61,7 +60,6 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Instant pageGenStart = Instant.now();
-        System.out.println("post in login servlet");
 
         String username = req.getParameter("username");
         String password = req.getParameter("password");
@@ -70,7 +68,6 @@ public class LoginServlet extends HttpServlet {
         pageVariables.put("message", "");
 
         resp.setContentType("text/html;charset=utf-8");
-
 
         Duration dbCallsTime = Duration.ZERO;
 
@@ -106,7 +103,6 @@ public class LoginServlet extends HttpServlet {
         }
 
         if (user != null && user.getPassword().equals(password)) {
-
             Instant sessionAddStart = Instant.now();
             sessionsServiceImpl.add(req.getSession().getId(), user.getId());
             dbCallsTime = dbCallsTime.plus(Duration.between(sessionAddStart, Instant.now()));

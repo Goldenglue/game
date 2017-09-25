@@ -15,27 +15,21 @@ public class DataSource {
 
     public DataSource() {
         this.connection = createConnection();
-        setUpDatabase(this.connection);
     }
 
     private static Connection createConnection() {
         try {
             DriverManager.registerDriver((Driver) Class.forName("com.mysql.jdbc.Driver").newInstance());
 
-            StringBuilder url = new StringBuilder()
-                    .append("jdbc:mysql://")
-                    .append("localhost:")
-                    .append("3306/")
-                    .append("ivan_bronnikov?")
-                    .append("user=root&")
-                    .append("password=");
+            String url = null;
             try {
-                url.append(getPassword());
+                url = getdbUrl();
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            return DriverManager.getConnection(url.toString());
+            assert url != null;
+            return DriverManager.getConnection(url);
         } catch (SQLException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -46,14 +40,6 @@ public class DataSource {
         return connection;
     }
 
-    private static String getPassword() throws IOException {
-        Path path = Paths.get("password.txt");
-        if (Files.exists(path)) {
-            return Files.readAllLines(path).get(0);
-        } else {
-            throw new FileNotFoundException();
-        }
-    }
 
     private static String getdbUrl() throws IOException {
         Path path = Paths.get("dbpath.txt");
@@ -62,9 +48,5 @@ public class DataSource {
         } else {
             throw new FileNotFoundException();
         }
-    }
-
-    private static void setUpDatabase(Connection connection) {
-
     }
 }

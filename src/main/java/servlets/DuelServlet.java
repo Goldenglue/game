@@ -31,7 +31,6 @@ public class DuelServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Instant pageGenStart = Instant.now();
-        System.out.println("Get in duel servlet");
         Map<String, Object> pageVariables = new HashMap<>();
         Instant getRatingStart = Instant.now();
 
@@ -51,10 +50,9 @@ public class DuelServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("post in duel servlet");
-
         resp.setContentType("text/html;charset=utf-8");
         resp.setStatus(HttpServletResponse.SC_OK);
+
         alone.set(!alone.get());
         if (alone.get()) {
             duelId.incrementAndGet();

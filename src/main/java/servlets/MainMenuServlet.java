@@ -26,12 +26,9 @@ public class MainMenuServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("get in main menu");
         Instant pageGenStart = Instant.now();
-        resp.setContentType("text/html;charset=utf-8");
-        resp.setStatus(HttpServletResponse.SC_OK);
-        Map<String, Object> pageVariables = new HashMap<>();
 
+        Map<String, Object> pageVariables = new HashMap<>();
 
         String time = req.getParameter("time");
         String db = req.getParameter("db");
@@ -43,6 +40,8 @@ public class MainMenuServlet extends HttpServlet {
         } else {
             PageGenHelper.getPage("main.html", stream, pageVariables, pageGenStart, 0, 0);
         }
+        resp.setContentType("text/html;charset=utf-8");
+        resp.setStatus(HttpServletResponse.SC_OK);
         resp.getWriter().println(stream.toString());
     }
 

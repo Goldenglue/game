@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,7 +36,6 @@ public class FightServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("get in fight servlet");
         Instant pageGenStart = Instant.now();
 
         Map<String, Object> pageVariables = new HashMap<>();
@@ -46,7 +46,7 @@ public class FightServlet extends HttpServlet {
         Duel duel = ongoingDuels.get(duelId);
         if (duel.getStatus()) {
             long secondsAfterStart = duel.secondsAfterStart();
-            if (secondsAfterStart <= 5) {
+            if (secondsAfterStart <= 60) {
                 resp.setIntHeader("Refresh", 1);
                 pageVariables.put("waiting", true);
                 pageVariables.put("timeBeforeStart", 60 - secondsAfterStart);
@@ -64,14 +64,15 @@ public class FightServlet extends HttpServlet {
             return;
         }
 
+        Instant dbCallsStart = Instant.now();
         User user = userServiceImpl.getBySession(req.getSession().getId());
         Character character = charactersServiceImpl.get(user.getId());
+        Duration dbCallsTime = Duration.between(dbCallsStart, Instant.now());
+
         duel.addUser(userId, user);
         duel.addCharacter(userId, character);
         duel.addLog(userId, new ArrayList<>());
 
-
-        //TODO create a somewhat smart way to check if everyone is ready
         AsyncContext context = req.startAsync();
         context.start(() -> {
             while (duel.getCharacters().size() < 2) {
@@ -88,7 +89,7 @@ public class FightServlet extends HttpServlet {
             PageGenHelper.putFightStats(userId, opponentId, duel, pageVariables);
 
             Writer stream = new StringWriter();
-            PageGenHelper.getPage("fight.html", stream, pageVariables, pageGenStart, 2, 0);
+            PageGenHelper.getPage("fight.html", stream, pageVariables, pageGenStart, 2, dbCallsTime.toMillis());
             try {
                 resp.setIntHeader("Refresh", 1);
                 resp.setContentType("text/html;charset=utf-8");
@@ -103,7 +104,6 @@ public class FightServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("post in fight servlet");
         Instant pageGenStart = Instant.now();
 
         Map<String, Object> pageVariables = new HashMap<>();
@@ -115,17 +115,23 @@ public class FightServlet extends HttpServlet {
         Duel duel = ongoingDuels.get(duelId);
         DuelManager duelManager = duel.getDuelManager();
 
+        Duration dbCallsTime = Duration.ZERO;
+        int dbCalls = 0;
+
         if (duelManager.process(userId, opponentId)) {
             pageVariables.put("going", true);
         } else {
             pageVariables.put("going", false);
             boolean isWinner = duelManager.didIWin(userId);
+            Instant dbCallStart = Instant.now();
             if (isWinner) {
                 userServiceImpl.updateRatingOnWin(duel.getUsers().get(userId).getId());
             } else {
                 userServiceImpl.updateRatingOnLose(duel.getUsers().get(userId).getId());
             }
             charactersServiceImpl.updateAfterMatch(duel.getUsers().get(userId).getId());
+            dbCalls = 2;
+            dbCallsTime = dbCallsTime.plus(Duration.between(dbCallStart, Instant.now()));
             pageVariables.put("didIWin", isWinner);
 
 
@@ -137,7 +143,7 @@ public class FightServlet extends HttpServlet {
         PageGenHelper.putFightStats(userId, opponentId, duel, pageVariables);
 
         Writer stream = new StringWriter();
-        PageGenHelper.getPage("fight.html", stream, pageVariables, pageGenStart, 0, 0);
+        PageGenHelper.getPage("fight.html", stream, pageVariables, pageGenStart, dbCalls, dbCallsTime.toMillis());
 
         resp.setContentType("text/html;charset=utf-8");
         resp.setStatus(HttpServletResponse.SC_OK);
