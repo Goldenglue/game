@@ -1,7 +1,8 @@
-package database.services;
+package database.services.implementations;
 
 import database.DataSource;
 import database.dao.CharacterDao;
+import database.services.CharacterService;
 import pojos.Character;
 import pojos.User;
 

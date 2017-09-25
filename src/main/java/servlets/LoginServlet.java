@@ -1,8 +1,11 @@
 package servlets;
 
-import database.services.CharactersServiceImpl;
-import database.services.SessionsServiceImpl;
-import database.services.UserServiceImpl;
+import database.services.CharacterService;
+import database.services.SessionService;
+import database.services.UserService;
+import database.services.implementations.CharactersServiceImpl;
+import database.services.implementations.SessionsServiceImpl;
+import database.services.implementations.UserServiceImpl;
 import pojos.User;
 import templater.PageGenHelper;
 
@@ -19,11 +22,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LoginServlet extends HttpServlet {
-    private final UserServiceImpl userServiceImpl;
-    private final CharactersServiceImpl charactersServiceImpl;
-    private final SessionsServiceImpl sessionsServiceImpl;
+    private final UserService userServiceImpl;
+    private final CharacterService charactersServiceImpl;
+    private final SessionService sessionsServiceImpl;
 
-    public LoginServlet(UserServiceImpl userServiceImpl, CharactersServiceImpl charactersServiceImpl, SessionsServiceImpl sessionsServiceImpl) {
+    public LoginServlet(UserService userServiceImpl, CharacterService charactersServiceImpl, SessionService sessionsServiceImpl) {
         this.userServiceImpl = userServiceImpl;
         this.charactersServiceImpl = charactersServiceImpl;
         this.sessionsServiceImpl = sessionsServiceImpl;

@@ -1,6 +1,7 @@
 package servlets;
 
-import database.services.SessionsServiceImpl;
+import database.services.SessionService;
+import database.services.implementations.SessionsServiceImpl;
 import templater.PageGenHelper;
 
 import javax.servlet.ServletException;
@@ -16,9 +17,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MainMenuServlet extends HttpServlet {
-    private final SessionsServiceImpl sessionsServiceImpl;
+    private final SessionService sessionsServiceImpl;
 
-    public MainMenuServlet(SessionsServiceImpl sessionsServiceImpl) {
+    public MainMenuServlet(SessionService sessionsServiceImpl) {
 
         this.sessionsServiceImpl = sessionsServiceImpl;
     }

@@ -1,6 +1,7 @@
 package servlets;
 
-import database.services.UserServiceImpl;
+import database.services.UserService;
+import database.services.implementations.UserServiceImpl;
 import templater.PageGenHelper;
 
 import javax.servlet.AsyncContext;
@@ -20,10 +21,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class DuelServlet extends HttpServlet {
     private AtomicBoolean alone = new AtomicBoolean(false);
-    private final UserServiceImpl userServiceImpl;
+    private final UserService userServiceImpl;
     private AtomicInteger duelId = new AtomicInteger(0);
 
-    public DuelServlet(UserServiceImpl userServiceImpl) {
+    public DuelServlet(UserService userServiceImpl) {
         this.userServiceImpl = userServiceImpl;
     }
 

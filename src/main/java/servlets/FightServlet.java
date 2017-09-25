@@ -1,7 +1,9 @@
 package servlets;
 
-import database.services.CharactersServiceImpl;
-import database.services.UserServiceImpl;
+import database.services.CharacterService;
+import database.services.UserService;
+import database.services.implementations.CharactersServiceImpl;
+import database.services.implementations.UserServiceImpl;
 import managers.DuelManager;
 import pojos.Character;
 import pojos.Duel;
@@ -23,10 +25,10 @@ import java.util.Map;
 
 public class FightServlet extends HttpServlet {
     private static final Map<Integer, Duel> ongoingDuels = new HashMap<>();
-    private final CharactersServiceImpl charactersServiceImpl;
-    private final UserServiceImpl userServiceImpl;
+    private final CharacterService charactersServiceImpl;
+    private final UserService userServiceImpl;
 
-    public FightServlet(CharactersServiceImpl charactersServiceImpl, UserServiceImpl userServiceImpl) {
+    public FightServlet(CharacterService charactersServiceImpl, UserService userServiceImpl) {
         this.charactersServiceImpl = charactersServiceImpl;
         this.userServiceImpl = userServiceImpl;
     }

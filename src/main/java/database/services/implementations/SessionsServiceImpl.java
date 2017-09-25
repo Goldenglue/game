@@ -1,7 +1,8 @@
-package database.services;
+package database.services.implementations;
 
 import database.DataSource;
 import database.dao.SessionDao;
+import database.services.SessionService;
 
 public class SessionsServiceImpl implements SessionService {
     private final DataSource source;

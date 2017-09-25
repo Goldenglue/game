@@ -1,7 +1,10 @@
 import database.DataSource;
-import database.services.CharactersServiceImpl;
-import database.services.SessionsServiceImpl;
-import database.services.UserServiceImpl;
+import database.services.CharacterService;
+import database.services.SessionService;
+import database.services.UserService;
+import database.services.implementations.CharactersServiceImpl;
+import database.services.implementations.SessionsServiceImpl;
+import database.services.implementations.UserServiceImpl;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.FilterHolder;
@@ -20,9 +23,9 @@ import java.util.EnumSet;
 public class GameServer {
     public static void main(String[] args) throws Exception {
         DataSource source = new DataSource();
-        UserServiceImpl userServiceImpl = new UserServiceImpl(source);
-        CharactersServiceImpl charactersServiceImpl = new CharactersServiceImpl(source);
-        SessionsServiceImpl sessionsServiceImpl = new SessionsServiceImpl(source);
+        UserService userServiceImpl = new UserServiceImpl(source);
+        CharacterService charactersServiceImpl = new CharactersServiceImpl(source);
+        SessionService sessionsServiceImpl = new SessionsServiceImpl(source);
 
         Server server = new Server(8080);
 

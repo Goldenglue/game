@@ -1,7 +1,8 @@
-package database.services;
+package database.services.implementations;
 
 import database.DataSource;
 import database.dao.UserDao;
+import database.services.UserService;
 import pojos.User;
 
 public class UserServiceImpl implements UserService {
