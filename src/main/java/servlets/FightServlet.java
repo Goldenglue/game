@@ -2,10 +2,10 @@ package servlets;
 
 import database.services.CharactersService;
 import database.services.UserService;
+import managers.DuelManager;
 import pojos.Character;
 import pojos.Duel;
 import pojos.User;
-import managers.DuelManager;
 import templater.PageGenHelper;
 
 import javax.servlet.AsyncContext;
@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.sql.SQLException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,7 +44,7 @@ public class FightServlet extends HttpServlet {
         Duel duel = ongoingDuels.get(duelId);
         if (duel.getStatus()) {
             long secondsAfterStart = duel.secondsAfterStart();
-            if (secondsAfterStart <= 60) {
+            if (secondsAfterStart <= 5) {
                 resp.setIntHeader("Refresh", 1);
                 pageVariables.put("waiting", true);
                 pageVariables.put("timeBeforeStart", 60 - secondsAfterStart);
@@ -62,15 +61,13 @@ public class FightServlet extends HttpServlet {
             resp.getWriter().println(stream.toString());
             return;
         }
-        try {
-            User user = userService.getBySession(req.getSession().getId());
-            Character character = charactersService.get(user.getId());
-            duel.addUser(userId, user);
-            duel.addCharacter(userId, character);
-            duel.addLog(userId, new ArrayList<>());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
+        User user = userService.getBySession(req.getSession().getId());
+        Character character = charactersService.get(user.getId());
+        duel.addUser(userId, user);
+        duel.addCharacter(userId, character);
+        duel.addLog(userId, new ArrayList<>());
+
 
         //TODO create a somewhat smart way to check if everyone is ready
         AsyncContext context = req.startAsync();
@@ -115,10 +112,21 @@ public class FightServlet extends HttpServlet {
 
         Duel duel = ongoingDuels.get(duelId);
         DuelManager duelManager = duel.getDuelManager();
+
         if (duelManager.process(userId, opponentId)) {
             pageVariables.put("going", true);
         } else {
             pageVariables.put("going", false);
+            boolean isWinner = duelManager.didIWin(userId);
+            if (isWinner) {
+                userService.updateRatingOnWin(duel.getUsers().get(userId).getId());
+            } else {
+                userService.updateRatingOnLose(duel.getUsers().get(userId).getId());
+            }
+            charactersService.updateAfterMatch(duel.getUsers().get(userId).getId());
+            pageVariables.put("didIWin", isWinner);
+
+
             req.getSession().removeAttribute("duelId");
             req.getSession().removeAttribute("user");
             req.getSession().removeAttribute("opponent");
@@ -134,7 +142,7 @@ public class FightServlet extends HttpServlet {
         resp.getWriter().println(stream.toString());
     }
 
-    public static void createNewDuel(int duelId) {
+    static void createNewDuel(int duelId) {
         ongoingDuels.put(duelId, new Duel());
     }
 }

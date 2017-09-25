@@ -13,7 +13,7 @@ public class UserDao {
         this.executor = new Executor(connection);
     }
 
-    public int add(User user) throws SQLException {
+    public int add(User user) {
         return executor.execPreparedUpdate("insert into users(username, password) values(?,?)",
                 ps -> {
                     try {
@@ -25,7 +25,7 @@ public class UserDao {
                 });
     }
 
-    public User get(String username) throws SQLException {
+    public User get(String username) {
         return executor.execPreparedQuery("select * from users where username = ?",
                 result -> {
                     if (result.next()) {
@@ -47,7 +47,7 @@ public class UserDao {
                 });
     }
 
-    public User getBySession(String sessionId) throws SQLException {
+    public User getBySession(String sessionId) {
         return executor.execPreparedQuery("select * from users where id = " +
                         "(select user_id from current_sessions where session_id = ?) ",
                 result -> {
@@ -68,7 +68,7 @@ public class UserDao {
                 });
     }
 
-    public int getRating(String sessionId) throws SQLException {
+    public int getRating(String sessionId) {
         return executor.execPreparedQuery("select rating from users where id =" +
                         " (select user_id from current_sessions where session_id = ?)",
                 result -> {
@@ -84,24 +84,22 @@ public class UserDao {
                 });
     }
 
-    public int updateRatingOnWin(String sessionId) throws SQLException {
-        return executor.execPreparedUpdate("update users set rating = rating + 1 where id =" +
-        " (select user_id from current_sessions where session_id = ?)",
+    public int updateRatingOnWin(int userId) {
+        return executor.execPreparedUpdate("update users set rating = rating + 1 where id = ?",
                 ps -> {
                     try {
-                        ps.setString(1, sessionId);
+                        ps.setInt(1, userId);
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
                 });
     }
 
-    public int updateRatingOnLose(String sessionId) throws SQLException {
-        return executor.execPreparedUpdate("update users set rating = rating - 1 where id =" +
-                        " (select user_id from current_sessions where session_id = ?)",
+    public int updateRatingOnLose(int userId) {
+        return executor.execPreparedUpdate("update users set rating = rating - 1 where id = ?",
                 ps -> {
                     try {
-                        ps.setString(1, sessionId);
+                        ps.setInt(1, userId);
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }

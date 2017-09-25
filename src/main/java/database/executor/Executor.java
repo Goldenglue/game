@@ -24,7 +24,7 @@ public class Executor {
         return key;
     }
 
-    public <T> T execPreparedQuery(String query, ResultHandler<T> handler, Consumer<PreparedStatement> consumer) throws SQLException {
+    public <T> T execPreparedQuery(String query, ResultHandler<T> handler, Consumer<PreparedStatement> consumer){
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             connection.setAutoCommit(false);
             consumer.accept(ps);
@@ -34,7 +34,11 @@ public class Executor {
                 return handler.handle(result);
             }
         } catch (SQLException e) {
-            connection.rollback();
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
             e.printStackTrace();
             return null;
         }

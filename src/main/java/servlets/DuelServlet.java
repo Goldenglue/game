@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
@@ -34,12 +33,9 @@ public class DuelServlet extends HttpServlet {
         System.out.println("Get in duel servlet");
         Map<String, Object> pageVariables = new HashMap<>();
         Instant getRatingStart = Instant.now();
-        int rating = 0;
-        try {
-            rating = userService.getRating(req.getSession().getId());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
+        int rating = userService.getRating(req.getSession().getId());
+
         Duration dbCallTime = Duration.between(getRatingStart, Instant.now());
         pageVariables.put("rating", rating);
         pageVariables.put("ready", false);

@@ -1,9 +1,7 @@
 package servlets;
 
 import database.services.SessionsService;
-import freemarker.template.Template;
 import templater.PageGenHelper;
-import templater.PageGenerator;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -12,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
@@ -55,13 +52,9 @@ public class MainMenuServlet extends HttpServlet {
         resp.setStatus(HttpServletResponse.SC_OK);
 
         Instant sessionEndStart = Instant.now();
-        Duration dbTime = Duration.ZERO;
-        try {
-            sessionsService.endSession(req.getSession().getId());
-            dbTime = Duration.between(sessionEndStart, Instant.now());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        sessionsService.endSession(req.getSession().getId());
+        Duration dbTime = Duration.between(sessionEndStart, Instant.now());
+
         req.getSession().invalidate();
 
         Duration time = Duration.between(pageGenStart, Instant.now());

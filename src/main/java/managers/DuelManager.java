@@ -11,6 +11,7 @@ public class DuelManager {
     private final Map<Integer, User> users;
     private final Map<Integer, Character> characters;
     private final Map<Integer, List<String>> logs;
+    private int winnerId;
 
     public DuelManager(Duel duel) {
         this.users = duel.getUsers();
@@ -29,11 +30,12 @@ public class DuelManager {
         Character opponentCharacter = characters.get(opponentId);
 
         opponentCharacter.reduceHealth(userCharacter.getCurrentDamage());
-        writeLog("Вы ударили " + opponent.getUsername() + " на " + userCharacter.getCurrentDamage() + "урона ", userId);
-        writeLog(user.getUsername() + " ударил вас на " + userCharacter.getCurrentDamage() + "урона ", opponentId);
+        writeLog("Вы ударили " + opponent.getUsername() + " на " + userCharacter.getCurrentDamage() + " урона", userId);
+        writeLog(user.getUsername() + " ударил вас на " + userCharacter.getCurrentDamage() + " урона", opponentId);
         if (checkFightState(userId, opponentId)) {
             return true;
         } else {
+            setResult(userId);
             writeLog("Вы убили " + opponent.getUsername(), userId);
             writeLog("Вас убил " + user.getUsername(), opponentId);
             return false;
@@ -45,7 +47,18 @@ public class DuelManager {
     }
 
     private void writeLog(String line, int id) {
-        List<String> list = logs.get(id);
-        list.add(line);
+        logs.get(id).add(line);
+    }
+
+    private void setResult(int winnerId) {
+        this.winnerId = winnerId;
+    }
+
+    public int getWinnerId() {
+        return winnerId;
+    }
+
+    public boolean didIWin(int userId) {
+        return winnerId == userId;
     }
 }

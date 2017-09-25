@@ -13,7 +13,7 @@ public class SessionDao {
         this.executor = new Executor(connection);
     }
 
-    public void add(String sessionId, int userId) throws SQLException {
+    public void add(String sessionId, int userId) {
         executor.execPreparedUpdate("insert into current_sessions(session_id, user_id) values(?,?)",
                 ps -> {
                     try {
@@ -25,7 +25,7 @@ public class SessionDao {
                 });
     }
 
-    public void remove(String sessionId) throws SQLException {
+    public void remove(String sessionId) {
         executor.execPreparedUpdate("delete from current_sessions where session_id = ?",
                 ps -> {
                     try {

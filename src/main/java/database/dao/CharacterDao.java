@@ -14,7 +14,7 @@ public class CharacterDao {
         this.executor = new Executor(connection);
     }
 
-    public int add(Character character) throws SQLException {
+    public int add(Character character)  {
         return executor.execPreparedUpdate("insert into characters(owner_id) values(?)",
                 ps -> {
                     try {
@@ -25,7 +25,7 @@ public class CharacterDao {
                 });
     }
 
-    public Character get(int ownerId) throws SQLException {
+    public Character get(int ownerId){
         return executor.execPreparedQuery("select * from characters where owner_id = ?",
                 result -> {
                     if (result.next()) {

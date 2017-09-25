@@ -1,9 +1,9 @@
 package servlets;
 
-import pojos.User;
 import database.services.CharactersService;
 import database.services.SessionsService;
 import database.services.UserService;
+import pojos.User;
 import templater.PageGenHelper;
 
 import javax.servlet.ServletException;
@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
@@ -69,34 +68,29 @@ public class LoginServlet extends HttpServlet {
 
         resp.setContentType("text/html;charset=utf-8");
 
-        User user = null;
+
         Duration dbCallsTime = Duration.ZERO;
-        try {
-            Instant userCallStart = Instant.now();
-            user = userService.getByUsername(username);
-            dbCallsTime = dbCallsTime.plus(Duration.between(userCallStart, Instant.now()));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
+        Instant userCallStart = Instant.now();
+        User user = userService.getByUsername(username);
+        dbCallsTime = dbCallsTime.plus(Duration.between(userCallStart, Instant.now()));
+
         StringBuilder redirect = new StringBuilder().append("/main?");
         if (user == null && !password.equals("")) {
-            try {
-                user = new User(username, password);
-                Instant userAddStart = Instant.now();
-                int id = userService.addNewUser(username, password);
-                dbCallsTime = dbCallsTime.plus(Duration.between(userAddStart, Instant.now()));
-                user.setId(id);
+            user = new User(username, password);
+            Instant userAddStart = Instant.now();
+            int id = userService.addNewUser(username, password);
+            dbCallsTime = dbCallsTime.plus(Duration.between(userAddStart, Instant.now()));
+            user.setId(id);
 
-                Instant charAddStart = Instant.now();
-                charactersService.addNewCharacter(user);
-                dbCallsTime = dbCallsTime.plus(Duration.between(charAddStart, Instant.now()));
+            Instant charAddStart = Instant.now();
+            charactersService.addNewCharacter(user);
+            dbCallsTime = dbCallsTime.plus(Duration.between(charAddStart, Instant.now()));
 
-                Instant sessionAddStart = Instant.now();
-                sessionsService.add(req.getSession(true).getId(), user.getId());
-                dbCallsTime = dbCallsTime.plus(Duration.between(sessionAddStart, Instant.now()));
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            Instant sessionAddStart = Instant.now();
+            sessionsService.add(req.getSession(true).getId(), user.getId());
+            dbCallsTime = dbCallsTime.plus(Duration.between(sessionAddStart, Instant.now()));
+
             resp.setContentType("text/html;charset=utf-8");
             resp.setStatus(HttpServletResponse.SC_OK);
             Duration time = Duration.between(pageGenStart, Instant.now());
@@ -109,13 +103,11 @@ public class LoginServlet extends HttpServlet {
         }
 
         if (user != null && user.getPassword().equals(password)) {
-            try {
-                Instant sessionAddStart = Instant.now();
-                sessionsService.add(req.getSession().getId(), user.getId());
-                dbCallsTime = dbCallsTime.plus(Duration.between(sessionAddStart, Instant.now()));
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+
+            Instant sessionAddStart = Instant.now();
+            sessionsService.add(req.getSession().getId(), user.getId());
+            dbCallsTime = dbCallsTime.plus(Duration.between(sessionAddStart, Instant.now()));
+
             resp.setContentType("text/html;charset=utf-8");
             resp.setStatus(HttpServletResponse.SC_OK);
 
