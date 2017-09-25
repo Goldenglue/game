@@ -28,7 +28,7 @@ public class DataSource {
                         .append("jdbc:mysql://")
                         .append("localhost:")
                         .append("3306/")
-                        .append("game?")
+                        .append("ivan_bronnikov?")
                         .append("user=root&")
                         .append("password=")
                         .append(getPassword());
