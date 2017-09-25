@@ -1,6 +1,6 @@
 package pojos;
 
-import processors.DuelProcessor;
+import managers.DuelManager;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -13,13 +13,13 @@ public class Duel {
     private final Map<Integer, User> users = new HashMap<>();
     private final Map<Integer, Character> characters = new HashMap<>();
     private final Map<Integer, List<String>> logs = new HashMap<>();
-    private final DuelProcessor duelProcessor;
+    private final DuelManager duelManager;
     private AtomicBoolean ready = new AtomicBoolean(false);
     private Instant startMoment;
 
 
     public Duel() {
-        this.duelProcessor = new DuelProcessor(this);
+        this.duelManager = new DuelManager(this);
     }
 
     public void addUser(int userId, User user) {
@@ -66,8 +66,8 @@ public class Duel {
         return Duration.between(startMoment, Instant.now()).getSeconds();
     }
 
-    public DuelProcessor getDuelProcessor() {
-        return duelProcessor;
+    public DuelManager getDuelManager() {
+        return duelManager;
     }
 
     @Override

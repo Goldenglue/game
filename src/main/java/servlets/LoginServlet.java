@@ -105,6 +105,7 @@ public class LoginServlet extends HttpServlet {
                     .append("&db=").append(4)
                     .append("&dbTime=").append(dbCallsTime.toMillis());
             resp.sendRedirect(redirect.toString());
+            return;
         }
 
         if (user != null && user.getPassword().equals(password)) {
@@ -126,11 +127,11 @@ public class LoginServlet extends HttpServlet {
             resp.sendRedirect(redirect.toString());
 
         } else {
-            pageVariables.put("message", "Wrong password");
+            pageVariables.put("message", "Неверный пароль");
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
             Writer stream = new StringWriter();
-            PageGenHelper.getPage("index.html", stream, pageVariables, pageGenStart, 1, 1);
+            PageGenHelper.getPage("index.html", stream, pageVariables, pageGenStart, 1, dbCallsTime.toMillis());
             resp.getWriter().println(stream.toString());
         }
     }

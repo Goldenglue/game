@@ -1,4 +1,4 @@
-package processors;
+package managers;
 
 import pojos.Character;
 import pojos.Duel;
@@ -7,12 +7,12 @@ import pojos.User;
 import java.util.List;
 import java.util.Map;
 
-public class DuelProcessor {
+public class DuelManager {
     private final Map<Integer, User> users;
     private final Map<Integer, Character> characters;
     private final Map<Integer, List<String>> logs;
 
-    public DuelProcessor(Duel duel) {
+    public DuelManager(Duel duel) {
         this.users = duel.getUsers();
         this.characters = duel.getCharacters();
         this.logs = duel.getLogs();
@@ -29,8 +29,8 @@ public class DuelProcessor {
         Character opponentCharacter = characters.get(opponentId);
 
         opponentCharacter.reduceHealth(userCharacter.getCurrentDamage());
-        writeLog("Вы ударили " + opponent.getUsername() + " на " + userCharacter.getCurrentDamage() + "урона", userId);
-        writeLog(user.getUsername() + " ударил вас на " + userCharacter.getCurrentDamage() + "урона", opponentId);
+        writeLog("Вы ударили " + opponent.getUsername() + " на " + userCharacter.getCurrentDamage() + "урона ", userId);
+        writeLog(user.getUsername() + " ударил вас на " + userCharacter.getCurrentDamage() + "урона ", opponentId);
         if (checkFightState(userId, opponentId)) {
             return true;
         } else {
@@ -41,7 +41,7 @@ public class DuelProcessor {
     }
 
     private boolean checkFightState(int userId, int opponentId) {
-        return characters.get(userId).getCurrentHealth() >= 0 && characters.get(opponentId).getCurrentHealth() >= 0;
+        return characters.get(userId).getCurrentHealth() > 0 && characters.get(opponentId).getCurrentHealth() > 0;
     }
 
     private void writeLog(String line, int id) {

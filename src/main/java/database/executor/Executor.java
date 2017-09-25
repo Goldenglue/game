@@ -18,20 +18,23 @@ public class Executor {
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                 key = generatedKeys.next() ? generatedKeys.getInt(1) : updatedRows;
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return key;
     }
 
-    public <T> T execPreparedQuery(String query, ResultHandler<T> handler, Consumer<PreparedStatement> consumer) {
+    public <T> T execPreparedQuery(String query, ResultHandler<T> handler, Consumer<PreparedStatement> consumer) throws SQLException {
         try (PreparedStatement ps = connection.prepareStatement(query)) {
+            connection.setAutoCommit(false);
             consumer.accept(ps);
             try (ResultSet result = ps.executeQuery()) {
+                connection.commit();
+                connection.setAutoCommit(true);
                 return handler.handle(result);
             }
         } catch (SQLException e) {
+            connection.rollback();
             e.printStackTrace();
             return null;
         }

@@ -83,4 +83,28 @@ public class UserDao {
                     }
                 });
     }
+
+    public int updateRatingOnWin(String sessionId) throws SQLException {
+        return executor.execPreparedUpdate("update users set rating = rating + 1 where id =" +
+        " (select user_id from current_sessions where session_id = ?)",
+                ps -> {
+                    try {
+                        ps.setString(1, sessionId);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                });
+    }
+
+    public int updateRatingOnLose(String sessionId) throws SQLException {
+        return executor.execPreparedUpdate("update users set rating = rating - 1 where id =" +
+                        " (select user_id from current_sessions where session_id = ?)",
+                ps -> {
+                    try {
+                        ps.setString(1, sessionId);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                });
+    }
 }

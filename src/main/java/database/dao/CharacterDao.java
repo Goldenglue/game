@@ -45,4 +45,15 @@ public class CharacterDao {
                     }
                 });
     }
+
+    public int updateStats(int ownerId) {
+        return executor.execPreparedUpdate("update characters set max_damage = max_damage + 1, max_health = max_health + 1 where owner_id = ?",
+                ps -> {
+                    try {
+                        ps.setInt(1, ownerId);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                });
+    }
 }

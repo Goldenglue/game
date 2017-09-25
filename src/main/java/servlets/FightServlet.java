@@ -5,7 +5,7 @@ import database.services.UserService;
 import pojos.Character;
 import pojos.Duel;
 import pojos.User;
-import processors.DuelProcessor;
+import managers.DuelManager;
 import templater.PageGenHelper;
 
 import javax.servlet.AsyncContext;
@@ -114,8 +114,8 @@ public class FightServlet extends HttpServlet {
         int userId = (int) req.getSession().getAttribute("user");
 
         Duel duel = ongoingDuels.get(duelId);
-        DuelProcessor duelProcessor = duel.getDuelProcessor();
-        if (duelProcessor.process(userId, opponentId)) {
+        DuelManager duelManager = duel.getDuelManager();
+        if (duelManager.process(userId, opponentId)) {
             pageVariables.put("going", true);
         } else {
             pageVariables.put("going", false);

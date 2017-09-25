@@ -57,6 +57,15 @@ public class DataSource {
         }
     }
 
+    private static String getdbUrl() throws IOException{
+        Path path = Paths.get("dbpath.txt");
+        if (Files.exists(path)) {
+            return Files.readAllLines(path).get(0);
+        } else {
+            throw new FileNotFoundException();
+        }
+    }
+
     private static void setUpDatabase(Connection connection) {
 
     }
