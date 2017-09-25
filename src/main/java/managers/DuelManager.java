@@ -54,10 +54,6 @@ public class DuelManager {
         this.winnerId = winnerId;
     }
 
-    public int getWinnerId() {
-        return winnerId;
-    }
-
     public boolean didIWin(int userId) {
         return winnerId == userId;
     }

@@ -1,6 +1,6 @@
 package servlets;
 
-import database.services.SessionsService;
+import database.services.SessionsServiceImpl;
 import templater.PageGenHelper;
 
 import javax.servlet.ServletException;
@@ -16,11 +16,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MainMenuServlet extends HttpServlet {
-    private final SessionsService sessionsService;
+    private final SessionsServiceImpl sessionsServiceImpl;
 
-    public MainMenuServlet(SessionsService sessionsService) {
+    public MainMenuServlet(SessionsServiceImpl sessionsServiceImpl) {
 
-        this.sessionsService = sessionsService;
+        this.sessionsServiceImpl = sessionsServiceImpl;
     }
 
     @Override
@@ -52,7 +52,7 @@ public class MainMenuServlet extends HttpServlet {
         resp.setStatus(HttpServletResponse.SC_OK);
 
         Instant sessionEndStart = Instant.now();
-        sessionsService.endSession(req.getSession().getId());
+        sessionsServiceImpl.endSession(req.getSession().getId());
         Duration dbTime = Duration.between(sessionEndStart, Instant.now());
 
         req.getSession().invalidate();

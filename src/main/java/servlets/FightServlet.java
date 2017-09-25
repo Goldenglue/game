@@ -1,7 +1,7 @@
 package servlets;
 
-import database.services.CharactersService;
-import database.services.UserService;
+import database.services.CharactersServiceImpl;
+import database.services.UserServiceImpl;
 import managers.DuelManager;
 import pojos.Character;
 import pojos.Duel;
@@ -23,12 +23,12 @@ import java.util.Map;
 
 public class FightServlet extends HttpServlet {
     private static final Map<Integer, Duel> ongoingDuels = new HashMap<>();
-    private final CharactersService charactersService;
-    private final UserService userService;
+    private final CharactersServiceImpl charactersServiceImpl;
+    private final UserServiceImpl userServiceImpl;
 
-    public FightServlet(CharactersService charactersService, UserService userService) {
-        this.charactersService = charactersService;
-        this.userService = userService;
+    public FightServlet(CharactersServiceImpl charactersServiceImpl, UserServiceImpl userServiceImpl) {
+        this.charactersServiceImpl = charactersServiceImpl;
+        this.userServiceImpl = userServiceImpl;
     }
 
     @Override
@@ -62,8 +62,8 @@ public class FightServlet extends HttpServlet {
             return;
         }
 
-        User user = userService.getBySession(req.getSession().getId());
-        Character character = charactersService.get(user.getId());
+        User user = userServiceImpl.getBySession(req.getSession().getId());
+        Character character = charactersServiceImpl.get(user.getId());
         duel.addUser(userId, user);
         duel.addCharacter(userId, character);
         duel.addLog(userId, new ArrayList<>());
@@ -119,11 +119,11 @@ public class FightServlet extends HttpServlet {
             pageVariables.put("going", false);
             boolean isWinner = duelManager.didIWin(userId);
             if (isWinner) {
-                userService.updateRatingOnWin(duel.getUsers().get(userId).getId());
+                userServiceImpl.updateRatingOnWin(duel.getUsers().get(userId).getId());
             } else {
-                userService.updateRatingOnLose(duel.getUsers().get(userId).getId());
+                userServiceImpl.updateRatingOnLose(duel.getUsers().get(userId).getId());
             }
-            charactersService.updateAfterMatch(duel.getUsers().get(userId).getId());
+            charactersServiceImpl.updateAfterMatch(duel.getUsers().get(userId).getId());
             pageVariables.put("didIWin", isWinner);
 
 

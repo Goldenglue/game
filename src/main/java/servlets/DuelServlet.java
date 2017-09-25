@@ -1,6 +1,6 @@
 package servlets;
 
-import database.services.UserService;
+import database.services.UserServiceImpl;
 import templater.PageGenHelper;
 
 import javax.servlet.AsyncContext;
@@ -20,11 +20,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class DuelServlet extends HttpServlet {
     private AtomicBoolean alone = new AtomicBoolean(false);
-    private final UserService userService;
+    private final UserServiceImpl userServiceImpl;
     private AtomicInteger duelId = new AtomicInteger(0);
 
-    public DuelServlet(UserService userService) {
-        this.userService = userService;
+    public DuelServlet(UserServiceImpl userServiceImpl) {
+        this.userServiceImpl = userServiceImpl;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class DuelServlet extends HttpServlet {
         Map<String, Object> pageVariables = new HashMap<>();
         Instant getRatingStart = Instant.now();
 
-        int rating = userService.getRating(req.getSession().getId());
+        int rating = userServiceImpl.getRating(req.getSession().getId());
 
         Duration dbCallTime = Duration.between(getRatingStart, Instant.now());
         pageVariables.put("rating", rating);

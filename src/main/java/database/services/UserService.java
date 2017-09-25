@@ -1,38 +1,17 @@
 package database.services;
 
-import database.dao.UserDao;
 import pojos.User;
 
-public class UserService implements Service {
+public interface UserService {
+    int addNewUser(String username, String password);
 
-    public int addNewUser(String username, String password) {
-        User user = new User(username, password);
-        UserDao dao = new UserDao(source.getConnection());
-        return dao.add(user);
-    }
+    User getByUsername(String username);
 
-    public User getByUsername(String username) {
-        UserDao dao = new UserDao(source.getConnection());
-        return dao.get(username);
-    }
+    int getRating(String sessionId);
 
-    public int getRating(String sessionId) {
-        UserDao dao = new UserDao(source.getConnection());
-        return dao.getRating(sessionId);
-    }
+    User getBySession(String sessionId);
 
-    public User getBySession(String sessionId) {
-        UserDao dao = new UserDao(source.getConnection());
-        return dao.getBySession(sessionId);
-    }
+    int updateRatingOnWin(int userId);
 
-    public int updateRatingOnWin(int userId) {
-        UserDao dao = new UserDao(source.getConnection());
-        return dao.updateRatingOnWin(userId);
-    }
-
-    public int updateRatingOnLose(int userId) {
-        UserDao dao = new UserDao(source.getConnection());
-        return dao.updateRatingOnLose(userId);
-    }
+    int updateRatingOnLose(int userId);
 }

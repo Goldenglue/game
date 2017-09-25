@@ -1,6 +1,7 @@
-import database.services.CharactersService;
-import database.services.SessionsService;
-import database.services.UserService;
+import database.DataSource;
+import database.services.CharactersServiceImpl;
+import database.services.SessionsServiceImpl;
+import database.services.UserServiceImpl;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.FilterHolder;
@@ -18,19 +19,20 @@ import java.util.EnumSet;
 
 public class GameServer {
     public static void main(String[] args) throws Exception {
-        UserService userService = new UserService();
-        CharactersService charactersService = new CharactersService();
-        SessionsService sessionsService = new SessionsService();
+        DataSource source = new DataSource();
+        UserServiceImpl userServiceImpl = new UserServiceImpl(source);
+        CharactersServiceImpl charactersServiceImpl = new CharactersServiceImpl(source);
+        SessionsServiceImpl sessionsServiceImpl = new SessionsServiceImpl(source);
 
         Server server = new Server(8080);
 
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.addFilter(new FilterHolder(new AuthenticationFilter()), "/*", EnumSet.of(DispatcherType.REQUEST));
 
-        context.addServlet(new ServletHolder(new LoginServlet(userService, charactersService, sessionsService)), "/login");
-        context.addServlet(new ServletHolder(new MainMenuServlet(sessionsService)), "/main");
-        context.addServlet(new ServletHolder(new DuelServlet(userService)), "/duel");
-        context.addServlet(new ServletHolder(new FightServlet(charactersService, userService)), "/duel/fight");
+        context.addServlet(new ServletHolder(new LoginServlet(userServiceImpl, charactersServiceImpl, sessionsServiceImpl)), "/login");
+        context.addServlet(new ServletHolder(new MainMenuServlet(sessionsServiceImpl)), "/main");
+        context.addServlet(new ServletHolder(new DuelServlet(userServiceImpl)), "/duel");
+        context.addServlet(new ServletHolder(new FightServlet(charactersServiceImpl, userServiceImpl)), "/duel/fight");
 
         context.setContextPath("/");
         context.setBaseResource(Resource.newResource("src/main/resources"));

@@ -1,8 +1,8 @@
 package servlets;
 
-import database.services.CharactersService;
-import database.services.SessionsService;
-import database.services.UserService;
+import database.services.CharactersServiceImpl;
+import database.services.SessionsServiceImpl;
+import database.services.UserServiceImpl;
 import pojos.User;
 import templater.PageGenHelper;
 
@@ -19,14 +19,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LoginServlet extends HttpServlet {
-    private final UserService userService;
-    private final CharactersService charactersService;
-    private final SessionsService sessionsService;
+    private final UserServiceImpl userServiceImpl;
+    private final CharactersServiceImpl charactersServiceImpl;
+    private final SessionsServiceImpl sessionsServiceImpl;
 
-    public LoginServlet(UserService userService, CharactersService charactersService, SessionsService sessionsService) {
-        this.userService = userService;
-        this.charactersService = charactersService;
-        this.sessionsService = sessionsService;
+    public LoginServlet(UserServiceImpl userServiceImpl, CharactersServiceImpl charactersServiceImpl, SessionsServiceImpl sessionsServiceImpl) {
+        this.userServiceImpl = userServiceImpl;
+        this.charactersServiceImpl = charactersServiceImpl;
+        this.sessionsServiceImpl = sessionsServiceImpl;
     }
 
     @Override
@@ -72,23 +72,23 @@ public class LoginServlet extends HttpServlet {
         Duration dbCallsTime = Duration.ZERO;
 
         Instant userCallStart = Instant.now();
-        User user = userService.getByUsername(username);
+        User user = userServiceImpl.getByUsername(username);
         dbCallsTime = dbCallsTime.plus(Duration.between(userCallStart, Instant.now()));
 
         StringBuilder redirect = new StringBuilder().append("/main?");
         if (user == null && !password.equals("")) {
             user = new User(username, password);
             Instant userAddStart = Instant.now();
-            int id = userService.addNewUser(username, password);
+            int id = userServiceImpl.addNewUser(username, password);
             dbCallsTime = dbCallsTime.plus(Duration.between(userAddStart, Instant.now()));
             user.setId(id);
 
             Instant charAddStart = Instant.now();
-            charactersService.addNewCharacter(user);
+            charactersServiceImpl.addNewCharacter(user);
             dbCallsTime = dbCallsTime.plus(Duration.between(charAddStart, Instant.now()));
 
             Instant sessionAddStart = Instant.now();
-            sessionsService.add(req.getSession(true).getId(), user.getId());
+            sessionsServiceImpl.add(req.getSession(true).getId(), user.getId());
             dbCallsTime = dbCallsTime.plus(Duration.between(sessionAddStart, Instant.now()));
 
             resp.setContentType("text/html;charset=utf-8");
@@ -105,7 +105,7 @@ public class LoginServlet extends HttpServlet {
         if (user != null && user.getPassword().equals(password)) {
 
             Instant sessionAddStart = Instant.now();
-            sessionsService.add(req.getSession().getId(), user.getId());
+            sessionsServiceImpl.add(req.getSession().getId(), user.getId());
             dbCallsTime = dbCallsTime.plus(Duration.between(sessionAddStart, Instant.now()));
 
             resp.setContentType("text/html;charset=utf-8");
