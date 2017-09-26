@@ -32,6 +32,15 @@
     border: none;
 }
 
+#duel-btn {
+    background-color: #a8302c;
+}
+
+#duel-btn:hover {
+    background-color: #da352f;
+    text-decoration: none;
+}
+
 .container input[type=submit]:hover {
     background-color: #37a1db;
     text-decoration: none;
@@ -60,17 +69,8 @@
     padding: 8px 16px;
 }
 
-.menu li a {
-    color: #000;
-    display: block;
-    padding: 8px 16px;
-    text-decoration: none;
-    font-size: 20px;
-}
-
-.menu li a:hover {
-    background-color: #555;
-    color: white;
+.menu ul li {
+    padding: 5px 5px 5px 5px;
 }
 
 .fight:after {

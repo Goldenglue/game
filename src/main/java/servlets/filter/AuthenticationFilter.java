@@ -21,15 +21,13 @@ public class AuthenticationFilter implements Filter {
 
         HttpSession session = req.getSession(false);
 
-        if (session == null && !uri.equals("/login")) {
-            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        if (session == null && !uri.equals("/login") && !uri.equals("/static/css/style.css") && !uri.equals("/favicon.ico")) {
             resp.sendRedirect("/login");
-        } else if (session != null && uri.equals("/login")) {
-            resp.setStatus(HttpServletResponse.SC_OK);
-            resp.sendRedirect("/main");
         } else {
             chain.doFilter(request, response);
         }
+
+
 
     }
 
